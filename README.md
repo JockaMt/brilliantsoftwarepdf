@@ -66,6 +66,25 @@ Este projeto está licenciado sob a [Licença MIT](./LICENSE).
 
 ---
 
+## 🔒 Update
+
+Como atualizar o programa:
+
+#### Passo 1:
+
+Gerar uma assinatura, para isso usa-se esse comando:
+
+```.powershell
+tauri signer sign -f "$env:USERPROFILE\.tauri\brilliantpdf.key" "<caminho_do_instalador>.msi"
+```
+#### Passo 2:
+
+Inserir a `senha_de_assinatura`, e isso irá gerar um .sig assinado, dentro dele está a chave para colocar no arquivo json que o atualizador busca, com o instalador.
+
+✅ Pronto, após isso, o aplicativo já vai baixar a nova atualização.
+
+---
+
 ## 🤝 Contribuições
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request com melhorias, correções ou novas ideias.

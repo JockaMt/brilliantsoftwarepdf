@@ -1,7 +1,7 @@
 use tauri_plugin_updater::UpdaterExt;
 
 #[tauri::command]
-async fn download_and_install_update(app: tauri::AppHandle) -> Result<(), String> {
+pub async fn download_and_install_update(app: tauri::AppHandle) -> Result<(), String> {
     let updater = app.updater().map_err(|e| e.to_string())?;
     let maybe_update = updater.check().await.map_err(|e| e.to_string())?;
 
@@ -20,7 +20,6 @@ async fn download_and_install_update(app: tauri::AppHandle) -> Result<(), String
 
         println!("[Updater] Atualização instalada. Reiniciando app...");
         app.restart();
-        Ok(())
     } else {
         Err("Nenhuma atualização disponível.".to_string())
     }

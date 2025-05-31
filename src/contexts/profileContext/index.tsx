@@ -1,9 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 interface Profile {
-  name: string;
-  avatarUrl?: string;
-  // outras informações do perfil
+  [x: string]: string;
 }
 
 interface ProfileContextType {
@@ -18,8 +16,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   return (
     <ProfileContext.Provider value={{ profile, setProfile }}>
-  {children}
-  </ProfileContext.Provider>
+      {children}
+    </ProfileContext.Provider>
 );
 }
 

@@ -109,7 +109,7 @@ function SidebarProvider({
 
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.
-  const state = open ? "expanded" : "collapsed"
+  const state = !open ? "expanded" : "collapsed"
 
   const contextValue = React.useMemo<SidebarContextProps>(
     () => ({
@@ -251,11 +251,16 @@ function Sidebar({
   )
 }
 
+type SidebarTriggerProps = {
+  icon?: React.ReactNode;
+} & React.ComponentProps<typeof Button>;
+
 function SidebarTrigger({
                           className,
                           onClick,
+                          icon,
                           ...props
-                        }: React.ComponentProps<typeof Button>) {
+                        }: SidebarTriggerProps) {
   const { toggleSidebar } = useSidebar()
 
   return (
@@ -263,15 +268,14 @@ function SidebarTrigger({
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
-      size="default"
-      className={cn("size-7", className)}
+      className={cn("", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
       }}
       {...props}
     >
-      <PanelLeftIcon className="w-10 h-10" />
+      {icon ? icon : <PanelLeftIcon/>}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

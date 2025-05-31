@@ -6,16 +6,19 @@ import './styles.css';
 import Home from "@/routes/home.tsx";
 import Profile from "@/routes/profile.tsx";
 import Layout from "@/components/sidebar/layout.tsx";
+import AddSectionPage from "@/routes/addSection.tsx";
+import {ProfileProvider} from "@/contexts/profileContext";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <ProfileProvider><BrowserRouter>
       <Layout>
         <Routes>
           <Route path={"/"} element={<Home/>}/>
           <Route path={"/profile"} element={<Profile/>}/>
+          <Route path={"/new-section/:id?"} element={<AddSectionPage/>}/>
         </Routes>
       </Layout>
-    </BrowserRouter>
+    </BrowserRouter></ProfileProvider>
   </React.StrictMode>,
 );

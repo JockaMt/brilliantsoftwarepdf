@@ -1,14 +1,11 @@
-export const fakeDatabase = [
-  {
-    id: "728ed52f",
-    name: "aneis",
-    items: 2
-  },
-  {
-    id: "728e2d52f",
-    name: "pulseiras",
-    items: 1
-  },
+export const _fakeDatabase = [
+]
+
+export const fakeDatabase = [{
+  id: "728e2d52f",
+  name: "pulseiras",
+  items: 1
+},
   {
     id: "728e2d52f",
     name: "brincos",
@@ -98,5 +95,4 @@ export const fakeDatabase = [
     id: "728e2d52f",
     name: "bss",
     items: 2
-  },
-]
+  },]

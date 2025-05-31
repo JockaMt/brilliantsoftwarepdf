@@ -14,18 +14,21 @@ import {Button} from "@/components/ui/button.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {useEffect, useState} from "react";
 import {LoaderCircleIcon} from "lucide-react";
-import {fakeSectionItens} from "@/assets/fakeSectionItens.ts";
-import {columnsSection, ISection} from "@/components/tables/addSection/tables/addSectionColumnDefinition.tsx";
-import AddSectionTable from "@/components/tables/addSection/tables/addSectionTable.tsx";
+import {fakeItems} from "@/assets/fakeSectionItens.ts";
+import {columnsItems} from "@/components/tables/addSection/addSectionColumnDefinition.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
-import {formSchema} from "@/routes/addSectionComponents/addSectionSchema";
+import {formSchema} from "@/components/addSectionComponents/addSectionSchema.ts";
+import {IItem} from "@/@types/interfaces/types.ts";
+import TableSet from "@/components/tables/tableTemplate";
+import { useTranslation } from "react-i18next";
 
-async function getData(): Promise<ISection[]> {
+
+async function getData(): Promise<IItem[]> {
   // Fetch data from your API here.
-  return fakeSectionItens;
+  return fakeItems;
 }
 function AppWrapper() {
-  const [data, setData] = useState<ISection[]|null>(null);
+  const [data, setData] = useState<IItem[]|null>(null);
 
 
   useEffect( () => {
@@ -41,14 +44,15 @@ function AppWrapper() {
     //getData().then(setData);
   }, []);
 
-  if (!data) return <div className="flex h-full w-full justify-center items-center gap-2"><LoaderCircleIcon className="animate-spin" size={15}/><span>Carregando...</span></div>;
-  return <AddSectionTable columns={columnsSection} data={data}/>;
+  if (!data) return <div className="flex flex-1 justify-center items-center gap-2"><LoaderCircleIcon className="animate-spin" size={15}/><span>Carregando...</span></div>;
+  return <TableSet search="description" columns={columnsItems} data={data}/>;
 }
 export default function NewSection () {
+  const { t } = useTranslation()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      section: "",
     },
   })
 
@@ -57,23 +61,23 @@ export default function NewSection () {
   }
 
   return (
-    <div>
+    <div className="flex flex-col h-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="username"
+            name="section"
             render={({field}) => (
               <FormItem>
-                <FormLabel>Nome da seção</FormLabel>
+                <FormLabel>{t("section_name")}</FormLabel>
                 <FormControl>
                   <div className="flex flex-row space-x-3">
-                    <Input placeholder="Brincos, anéis, etc." {...field} />
-                    <Button type="submit">Submit</Button>
+                    <Input placeholder={t("placeholder_section")} {...field} />
+                    <Button type="submit">{t("submit")}</Button>
                   </div>
                 </FormControl>
                 <FormDescription>
-                  Adicione aqui as seções...
+                  {t("new_section_desc")}
                 </FormDescription>
                 <FormMessage/>
               </FormItem>

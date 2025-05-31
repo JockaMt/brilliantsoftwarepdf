@@ -1,12 +1,28 @@
-import {ColumnDef} from "@tanstack/react-table";
+import {Column, ColumnDef} from "@tanstack/react-table";
 import {Checkbox} from '@/components/ui/checkbox.tsx';
 import {SortDescIcon} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
+import {ISectionData} from "@/@types/interfaces/types.ts";
+import { useTranslation } from "react-i18next";
 
-export interface ISectionData {
-  id: string
-  name: string
-  items: number
+
+interface IButtonFilter {
+  translationKey: string
+  column: Column<ISectionData, unknown>
+}
+
+function ButtonFilter (props: IButtonFilter) {
+  const { t } = useTranslation()
+  return (
+    <Button
+        className="flex-grow text-left"
+        variant="ghost"
+        onClick={() => props.column.toggleSorting(props.column.getIsSorted() === "asc")}
+      >
+        {t(props.translationKey)}
+        <SortDescIcon className="ml-2 h-4 w-4" />
+      </Button>
+  )
 }
 
 export const columns: ColumnDef<ISectionData>[] = [
@@ -39,14 +55,7 @@ export const columns: ColumnDef<ISectionData>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <Button
-        className="flex-grow text-left"
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Nome
-        <SortDescIcon className="ml-2 h-4 w-4" />
-      </Button>
+      <ButtonFilter translationKey="name" column={column}/>
     ),
     cell: ({ row }) => (
       <span className="flex w-fit text-wrap h-5 shrink-0 overflow-hidden pl-3">
@@ -57,12 +66,8 @@ export const columns: ColumnDef<ISectionData>[] = [
   {
     accessorKey: "items",
     header: ({ column }) => (
-      <div className="auto flex justify-end">
-        <Button onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                variant="ghost" className="w-24 justify-end">
-          Items
-          <SortDescIcon className="ml-2 h-4 w-4" />
-        </Button>
+      <div className="absolute right-[2px] top-[2px]">
+        <ButtonFilter translationKey="items" column={column}/>
       </div>
     ),
     cell: ({ row }) => (
