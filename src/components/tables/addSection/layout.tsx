@@ -57,12 +57,12 @@ export default function Layout(props: ILayout) {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
-                selectedSections!.length > 0 ? props.table.toggleAllRowsSelected(false):props.table.toggleAllRowsSelected(true)
+                selectedSections!.length == props.table.getRowCount() ? props.table.toggleAllRowsSelected(false) : props.table.toggleAllRowsSelected(true)
                 selectAll()
               }}
               variant="default"
             >
-              {props.table.getIsAllRowsSelected() ? "Desselecionar tudo" : "Selecionar tudo"}
+              {selectedSections!.length == props.table.getRowCount() ? "Desselecionar tudo" : "Selecionar tudo"}
             </DropdownMenuItem>
             <Dialog>
               <DialogTrigger asChild>
@@ -70,7 +70,7 @@ export default function Layout(props: ILayout) {
                   className="flex w-full"
                   variant="destructive"
                   disabled={selectedSections?.length === 0}
-                  onSelect={(e) => e.preventDefault()} // ⛔️ evita que o Dropdown feche
+                  onSelect={(e) => e.preventDefault()}
                 >
                   Deletar
                 </DropdownMenuItem>
