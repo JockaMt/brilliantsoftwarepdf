@@ -52,7 +52,7 @@ export default function Home (): ReactElement {
             <Separator/>
             <Button variant={"default"} className={"p-6"}><CirclePlus/>{t("add_item")}</Button>
             <Button onClick={() => navigate("/new-section")} variant={"default"} className={"p-6"}><FolderPlusIcon/>{t("add_section")}</Button>
-            <Button variant={"default"} className={"p-6"}><FilesIcon/>{t("view_catalog")}</Button>
+            <Button variant={"default"} className={"p-6"}><FilesIcon/>{t("manage_catalogs")}</Button>
             <Button variant={"default"} className={"p-6"}><FileTerminal/>{t("generate_catalog")}</Button>
           </div>
           <Separator className={"mx-3"} orientation={"vertical"}/>

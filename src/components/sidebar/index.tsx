@@ -51,7 +51,6 @@ export function AppSidebar() {
   const getUpdate = async () => {
     const e = await invoke("check_for_update");
     if (typeof e == "string") {
-      console.log(version);
       toast.custom((tr) => (
         <Card className="flex w-90 select-none">
           <CardHeader>
@@ -81,9 +80,18 @@ export function AppSidebar() {
   }
 
   const handleVerifyUpdate = () => {
-    getUpdate().then((value) => {
-      console.log(value)
-    })
+    const toastId = toast.loading(t("checking_for_updates"))
+
+    getUpdate()
+      .then(() => {
+        console.log()
+        toast.dismiss(toastId) // remove o toast de loading
+      })
+      .catch((err) => {
+        console.error(err)
+        toast.dismiss(toastId)
+        toast.error(t("error_checking_for_updates"))
+      })
   }
 
   useEffect(() => {
@@ -113,14 +121,14 @@ export function AppSidebar() {
           <SidebarGroupLabel><Label className={"flex min-w-25 w-full"}>{t("language")}</Label></SidebarGroupLabel>
           <SidebarGroupContent>
             <Select onValueChange={changeLanguage} defaultValue={i18n.language}>
-            <SelectTrigger className={cn("w-full h-9 text-sm border-none cursor-pointer")}>
-            <span>{t(`${i18n.language}`)}</span>
-            </SelectTrigger>
-            <SelectContent>
-            <SelectItem value="pt">Português</SelectItem>
-            <SelectItem value="en">English</SelectItem>
-            <SelectItem value="es">Español</SelectItem>
-            </SelectContent>
+              <SelectTrigger className={cn("w-full h-9 text-sm border-none cursor-pointer")}>
+                <span>{t(`${i18n.language}`)}</span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pt">Português</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="es">Español</SelectItem>
+              </SelectContent>
             </Select>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -132,11 +140,11 @@ export function AppSidebar() {
           <SidebarMenu>
             <Tooltip>
               <TooltipTrigger>
-                <TooltipContent side="left">{t("verify_updates")}</TooltipContent>
+                <TooltipContent side="left">{t("check_for_updates")}</TooltipContent>
                 <SidebarMenuItem>
                   <SidebarMenuButton onClick={() => handleVerifyUpdate()} className="cursor-pointer text-black/50 hover:text-[var(--primary)]">
                     <WrenchIcon />
-                    {t("verify_updates")}
+                    {t("check_for_updates")}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </TooltipTrigger>
