@@ -28,23 +28,23 @@ export default function (): ReactElement {
   return (
     <div>
       <div className={"flex-col bg-muted h-full min-h-screen flex"}>
-        <Header back name={t("profile")} />
+        <Header back name={t("general.profile")} />
         <div className={"relative flex h-full bg-white rounded-md m-3 flex-row p-3"}>
           <div className="flex flex-1 flex-col items-center space-y-5">
             <Avatar className="w-30 h-30 bg-[var(--primary)] p-[0.2rem] my-7">
               <AvatarImage className="rounded-full" src={"https://github.com/jockamt.png"} />
               <AvatarFallback>JM</AvatarFallback>
             </Avatar>
-            <H1 side={'center'} text={capitalize(profile.name) || "username"} />
+            <H1 side={'center'} text={capitalize(profile.name) || t("info.default_name")} />
             <Separator className="m-3" />
             <div className="grid xl:grid-cols-3 lg:grid-cols-2 gap-4 w-full">
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {t("social_media")}
+                    {t("info.social_media")}
                   </CardTitle>
                   <CardDescription>
-                    {t("social_media_desc")}
+                    {t("info.social_media_desc")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -59,36 +59,36 @@ export default function (): ReactElement {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {t("settings")}
+                    {t("settings.settings")}
                   </CardTitle>
                   <CardDescription>
-                    {t("settings_desc")}
+                    {t("settings.settings_desc")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul>
-                    <li>{t("name")}: {profile.name}</li>
-                    <li className="overflow-hidden text-nowrap">{t("path")}: {}
+                    <li>{t("item.name")}: {profile.name}</li>
+                    <li className="overflow-hidden text-nowrap">{t("info.path")}: {}
                     </li>
-                    <li>{t("sections")}: {}</li>
-                    <li>{t("items")}: {}</li>
+                    <li>{t("section.sections")}: {}</li>
+                    <li>{t("item.items")}: {}</li>
                   </ul>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {t("info")}
+                    {t("info.info")}
                   </CardTitle>
                   <CardDescription>
-                    {t("info_desc")}
+                    {t("info.info_desc")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul>
-                    <li>{t("version")}: {version}</li>
-                    <li><a>{t("dev")}: jockamt</a></li>
-                    <li>{t("copy_right")}: </li>
+                    <li>{t("info.version")}: {version}</li>
+                    <li><a>{t("info.dev")}: jockamt</a></li>
+                    <li>{t("info.copy_right")}: </li>
                   </ul>
                 </CardContent>
               </Card>

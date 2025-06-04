@@ -54,7 +54,7 @@ export const columnsItems: ColumnDef<IItem>[] = [
   {
     accessorKey: "code",
     header: ({ column }) => (
-      <ButtonFilter translationKey="code" column={column}/>
+      <ButtonFilter translationKey="item.code" column={column}/>
     ),
     cell: ({ row }) => (
       <span className="flex w-20 text-wrap overflow-hidden pl-3">
@@ -65,7 +65,7 @@ export const columnsItems: ColumnDef<IItem>[] = [
   {
     accessorKey: "description",
     header: ({ column }) => (
-      <ButtonFilter translationKey="description"  column={column}/>
+      <ButtonFilter translationKey="item.description"  column={column}/>
     ),
     cell: ({ row }) => (
       <span className="flex w-96 text-wrap h-5 shrink-0 overflow-hidden pl-3">

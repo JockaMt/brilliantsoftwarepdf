@@ -3,12 +3,10 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
@@ -24,7 +22,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { useMediaQuery } from "usehooks-ts";
 import { useEffect, useRef, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app"
-import { Globe, Globe2, SidebarOpenIcon, SparklesIcon, WrenchIcon } from "lucide-react";
+import { SidebarOpenIcon, SparklesIcon, WrenchIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip.tsx";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
@@ -49,23 +47,24 @@ export function AppSidebar() {
   const [version, setVersion] = useState<string>("")
 
   const getUpdate = async () => {
-    const e = await invoke("check_for_update");
+    const e = await invoke("check_for_update"); //ToDo: remover esta linha
     if (typeof e == "string") {
+      if (e == "1.2.1") return
       toast.custom((tr) => (
         <Card className="flex w-90 select-none">
           <CardHeader>
-            <CardTitle className="flex w-full gap-3 items-center"><SparklesIcon /><h2>{t("update_avaliabe")}!</h2></CardTitle>
-            <CardDescription className="text-black/50">{t("update_avaliabe_desc")}: {e}</CardDescription>
+            <CardTitle className="flex w-full gap-3 items-center"><SparklesIcon /><h2>{t("update.update_avaliabe")}!</h2></CardTitle>
+            <CardDescription className="text-black/50">{t("update.update_avaliabe_desc")}: {e}</CardDescription>
           </CardHeader>
           <CardContent>
             <Button className="flex w-full" onClick={() => {
               toast.dismiss(tr);
-              toast.loading("Baixando atualizações...")
+              toast.loading(t("update.downloading"))
               // Aqui você pode chamar a função para baixar e instalar
               invoke("download_and_install_update").catch(err => {
                 console.error("Erro ao atualizar:", err);
                 // Exemplo de toast de erro:
-                toast.error("Falha ao atualizar");
+                toast.error(t("update.download_erro"));
               });
             }}>
               {t("update")}
@@ -80,7 +79,7 @@ export function AppSidebar() {
   }
 
   const handleVerifyUpdate = () => {
-    const toastId = toast.loading(t("checking_for_updates"))
+    const toastId = toast.loading(t("update.checking_for_updates"))
 
     getUpdate()
       .then(() => {
@@ -90,7 +89,7 @@ export function AppSidebar() {
       .catch((err) => {
         console.error(err)
         toast.dismiss(toastId)
-        toast.error(t("error_checking_for_updates"))
+        toast.error(t("update.download_erro"))
       })
   }
 
@@ -107,27 +106,27 @@ export function AppSidebar() {
       <SidebarHeader><SidebarMenu><SidebarMenuItem><SidebarMenuButton asChild>
         <Label className={"cursor-pointer"}>
           <SidebarTrigger icon={<SidebarOpenIcon style={{ paddingLeft: "2px", width: "20px", height: "20px" }} />} className={"fixed left-0"} />
-          <span className={"flex min-w-25 w-full justify-center"}>Menu</span>
+          <span className={"flex min-w-25 w-full justify-center"}>{t("general.menu")}</span>
         </Label>
       </SidebarMenuButton></SidebarMenuItem></SidebarMenu></SidebarHeader>
       <Separator />
       <SidebarContent className={"overflow-hidden overflow-y-auto"}>
-        {sidebarGroup({ items: itemsProfile, title: "Perfil" })}
+        {sidebarGroup({ items: itemsProfile, title: t("general.profile") })}
         <Separator />
-        {sidebarGroup({ items: itemsSettings, title: "Configurações" })}
+        {sidebarGroup({ items: itemsSettings, title: t("settings.settings") })}
         <Separator />
-        {sidebarGroup({ items: itemsHelp, title: "Ajuda" })}
+        {sidebarGroup({ items: itemsHelp, title: t("info.help") })}
         <SidebarGroup className="[[data-side=left][data-state=collapsed]_&]:hidden">
-          <SidebarGroupLabel><Label className={"flex min-w-25 w-full"}>{t("language")}</Label></SidebarGroupLabel>
+          <SidebarGroupLabel><Label className={"flex min-w-25 w-full"}>{t("settings.language")}</Label></SidebarGroupLabel>
           <SidebarGroupContent>
             <Select onValueChange={changeLanguage} defaultValue={i18n.language}>
               <SelectTrigger className={cn("w-full h-9 text-sm border-none cursor-pointer")}>
-                <span>{t(`${i18n.language}`)}</span>
+                <span>{t(`settings.${i18n.language}`)}</span>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pt">Português</SelectItem>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Español</SelectItem>
+                <SelectItem value="pt">{t("settings.pt")}</SelectItem>
+                <SelectItem value="en">{t("settings.en")}</SelectItem>
+                <SelectItem value="es">{t("settings.es")}</SelectItem>
               </SelectContent>
             </Select>
           </SidebarGroupContent>
@@ -135,16 +134,16 @@ export function AppSidebar() {
         <Separator />
         <SidebarGroup>
           <SidebarGroupLabel>
-            <Label>{t("version")}: v{version}</Label>
+            <Label>{t("info.version")}: v{version}</Label>
           </SidebarGroupLabel>
           <SidebarMenu>
             <Tooltip>
               <TooltipTrigger>
-                <TooltipContent side="left">{t("check_for_updates")}</TooltipContent>
+                <TooltipContent side="left">{t("update.check_for_updates")}</TooltipContent>
                 <SidebarMenuItem>
                   <SidebarMenuButton onClick={() => handleVerifyUpdate()} className="cursor-pointer text-black/50 hover:text-[var(--primary)]">
                     <WrenchIcon />
-                    {t("check_for_updates")}
+                    {t("update.check_for_updates")}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </TooltipTrigger>
@@ -171,7 +170,7 @@ export function AppSidebar() {
                   >
                     <AvatarImage src="https://github.com/jockamt.png" />
                   </Avatar>
-                  <span className="flex duration-300 flex-1 w-10 [[data-side=left][data-state=collapsed]_&]:w-0 [[data-side=left][data-state=collapsed]_&]:opacity-0">{t("profile")}</span>
+                  <span className="flex duration-300 flex-1 w-10 [[data-side=left][data-state=collapsed]_&]:w-0 [[data-side=left][data-state=collapsed]_&]:opacity-0">{t("general.profile")}</span>
                 </div>
               </div>
             </SidebarMenuItem>

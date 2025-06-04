@@ -79,48 +79,61 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
       <div className="flex flex-row justify-between">
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Button>{t("actions")}<ChevronDown /></Button>
+            <Button>{t("general.actions")}<ChevronDown /></Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align={"start"}>
-            <DropdownMenuLabel>{`${selectedItems ? selectedItems!.length : 0} ${t("items").toLowerCase()}`}</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {`${selectedItems ? selectedItems.length : 0} ${t("item.items").toLowerCase()}`}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={(e) => {
                 e.preventDefault()
-                selectedItems!.length == table.getRowCount() ? table.toggleAllRowsSelected(false) : table.toggleAllRowsSelected(true)
+                selectedItems.length == table.getRowCount()
+                  ? table.toggleAllRowsSelected(false)
+                  : table.toggleAllRowsSelected(true)
                 selectAll()
               }}
               variant="default"
             >
-              {selectedItems!.length == table.getRowCount() ? t("deselect_all") : t("select_all")}
+              {selectedItems.length == table.getRowCount()
+                ? t("multi_select.deselect_all")
+                : t("multi_select.select_all")}
             </DropdownMenuItem>
+
             <Dialog>
               <DialogTrigger asChild>
                 <DropdownMenuItem
                   className="flex w-full"
                   variant="destructive"
-                  disabled={selectedItems?.length === 0}
+                  disabled={selectedItems.length === 0}
                   onSelect={(e) => e.preventDefault()}
                 >
-                  {t("delete")}
+                  {t("general.delete")}
                 </DropdownMenuItem>
               </DialogTrigger>
               <DialogContent className="flex flex-col w-96 max-w-96">
                 <DialogHeader>
-                  <DialogTitle><H1 text={t("delete_items")} side={'start'} /></DialogTitle>
-                  <DialogDescription>{t("delect_selected_items")}</DialogDescription>
+                  <DialogTitle>
+                    <H1 text={t("general.delete")} side="start" />
+                  </DialogTitle>
+                  <DialogDescription>
+                    {t("validation.delete_items_desc")}
+                  </DialogDescription>
                 </DialogHeader>
                 <Separator />
                 <div className="flex w-full justify-center gap-4 py-4">
-                  <p>{t("sure_delete")} {table.getSelectedRowModel().rows.length} {t("items").toLowerCase()}?</p>
+                  <p>
+                    {t("validation.delete_items_verify")} {table.getSelectedRowModel().rows.length} {t("item.items").toLowerCase()}?
+                  </p>
                 </div>
                 <Separator />
                 <DialogFooter>
                   <DialogClose asChild>
-                    <Button variant="ghost">{t("cancel")}</Button>
+                    <Button variant="ghost">{t("general.back")}</Button>
                   </DialogClose>
                   <DialogClose asChild>
-                    <Button variant="destructive" type="submit">{t("delete")}</Button>
+                    <Button variant="destructive" type="submit">{t("general.delete")}</Button>
                   </DialogClose>
                 </DialogFooter>
               </DialogContent>
@@ -129,8 +142,8 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
         </DropdownMenu>
         <div className="flex justify-end space-x-3">
           <Label className={"flex"}>
-            <span>{t("filter")}</span>
-            <Input placeholder={t("search")}
+            <span>{t("general.filter")}</span>
+            <Input placeholder={t("general.search")}
               value={(table.getColumn(props.search)?.getFilterValue() as string) ?? ""}
               onChange={(event) =>
                 table.getColumn(props.search)?.setFilterValue(event.target.value)
@@ -172,7 +185,7 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
             ) : (
               <TableRow>
                 <TableCell colSpan={props.columns.length} className="h-24 text-center">
-                  {t("no_results")}
+                  {t("general.no_results")}
                 </TableCell>
               </TableRow>
             )}
@@ -180,10 +193,12 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
         </Table></div>
       <Separator />
       <div className="flex justify-center items-center space-x-2 border-1 border-t-0 rounded-b-md p-4">
-        {table.getState().pagination.pageIndex > 0 &&
-          <Button className={"flex w-10"} variant="ghost" size="sm" onClick={() => table.firstPage()}>1</Button>
-        }
-        {(table.getPageCount() > 1) &&
+        {table.getState().pagination.pageIndex > 0 && (
+          <Button className={"flex w-10"} variant="ghost" size="sm" onClick={() => table.firstPage()}>
+            1
+          </Button>
+        )}
+        {table.getPageCount() > 1 && (
           <div className="flex items-center justify-center">
             <Button
               variant="ghost"
@@ -192,28 +207,33 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
               disabled={!table.getCanPreviousPage()}
             >
               <ChevronLeft />
-              {t("previous")}
+              {t("general.previous")}
             </Button>
-            <Button variant="ghost" disabled className={"disabled:opacity-100 px-2"}>{table.getState().pagination.pageIndex + 1}</Button>
+            <Button variant="ghost" disabled className={"disabled:opacity-100 px-2"}>
+              {table.getState().pagination.pageIndex + 1}
+            </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              {t("next")}
+              {t("general.next")}
               <ChevronRight />
             </Button>
           </div>
-        }
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger className="flex justify-center items-center">
-            <Button variant="ghost">{t("show").toLocaleLowerCase()}<ChevronDown /></Button>
+            <Button variant="ghost">
+              {t("general.show").toLowerCase()}
+              <ChevronDown />
+            </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent onChange={(e) => console.log(e)}>
-            {[5, 10, 15, 20].map(pageSize => (
+          <DropdownMenuContent>
+            {[5, 10, 15, 20].map((pageSize) => (
               <DropdownMenuItem key={pageSize} onSelect={() => table.setPageSize(pageSize)}>
-                {t("show").toLocaleLowerCase()} {pageSize}
+                {t("general.show").toLowerCase()} {pageSize}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

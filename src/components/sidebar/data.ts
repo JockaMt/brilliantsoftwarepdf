@@ -17,19 +17,19 @@ export interface data {
 }
 export const itemsProfile = [
   {
-    title: "edit_name",
+    title: "edit.edit_name",
     url: "#",
     icon: Pencil
   },  {
-    title: "edit_image",
+    title: "edit.edit_image",
     url: "#",
     icon: ImageIcon
   },  {
-    title: "edit_palette",
+    title: "edit.edit_palette",
     url: "#",
     icon: LucidePalette
   },  {
-    title: "edit_phone",
+    title: "edit.edit_phone",
     url: "#",
     icon: PhoneIcon
   }
@@ -37,19 +37,19 @@ export const itemsProfile = [
 
 export const itemsSettings = [
   {
-    title: "import_catalog",
+    title: "catalog.import_catalog",
     url: "#",
     icon: FileOutputIcon
   },  {
-    title: "export_catalog",
+    title: "catalog.export_catalog",
     url: "#",
     icon: FileInputIcon
   },  {
-    title: "save_location",
+    title: "catalog.save_location",
     url: "#",
     icon: FolderIcon
   },  {
-    title: "delete_catalog",
+    title: "catalog.delete_catalog",
     url: "#",
     icon: TrashIcon
   }
@@ -57,7 +57,7 @@ export const itemsSettings = [
 
 export const itemsHelp = [
   {
-    title: "report_bug",
+    title: "feedback.report_bug",
     url: "#",
     icon: BugIcon
   },

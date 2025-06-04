@@ -55,7 +55,7 @@ export const columns: ColumnDef<ISectionData>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <ButtonFilter translationKey="name" column={column}/>
+      <ButtonFilter translationKey="item.name" column={column}/>
     ),
     cell: ({ row }) => (
       <span className="flex w-fit text-wrap h-5 shrink-0 overflow-hidden pl-3">
@@ -67,7 +67,7 @@ export const columns: ColumnDef<ISectionData>[] = [
     accessorKey: "items",
     header: ({ column }) => (
       <div className="absolute right-[2px] top-[2px]">
-        <ButtonFilter translationKey="items" column={column}/>
+        <ButtonFilter translationKey="item.items" column={column}/>
       </div>
     ),
     cell: ({ row }) => (

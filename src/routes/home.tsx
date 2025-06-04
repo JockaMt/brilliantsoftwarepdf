@@ -18,7 +18,7 @@ async function getData(): Promise<ISectionData[]> {
 
 function AppWrapper() {
   const [data, setData] = useState<ISectionData[]|null>(null);
-
+  const { t } = useTranslation();
 
   
   useEffect( () => {
@@ -35,7 +35,7 @@ function AppWrapper() {
   if (!data) return (
     <div className="flex h-full w-full justify-center items-center gap-2">
       <LoaderCircleIcon className="animate-spin" size={15}/>
-      <span>Carregando...</span>
+      <span>{t("general.loading")}...</span>
     </div>
   )
   return <TableSet search="name" columns={columns} data={data}/>;
@@ -45,19 +45,19 @@ export default function Home (): ReactElement {
   const { t } = useTranslation()
   return (
     <div className={"flex flex-col h-full"}>
-      <Header name={t("home")}/>
+      <Header name={t("general.home")}/>
       <div className={"relative flex h-full flex-row p-3"}>
           <div className={"flex flex-1 flex-col space-y-3 h-full max-w-72"}>
-            <H1 text={t("options")} side={'center'}/>
+            <H1 text={t("general.options")} side={'center'}/>
             <Separator/>
-            <Button variant={"default"} className={"p-6"}><CirclePlus/>{t("add_item")}</Button>
-            <Button onClick={() => navigate("/new-section")} variant={"default"} className={"p-6"}><FolderPlusIcon/>{t("add_section")}</Button>
-            <Button variant={"default"} className={"p-6"}><FilesIcon/>{t("manage_catalogs")}</Button>
-            <Button variant={"default"} className={"p-6"}><FileTerminal/>{t("generate_catalog")}</Button>
+            <Button onClick={() => navigate("/new-item")} variant={"default"} className={"p-6"}><CirclePlus/>{t("item.add_item")}</Button>
+            <Button onClick={() => navigate("/new-section")} variant={"default"} className={"p-6"}><FolderPlusIcon/>{t("section.add_section")}</Button>
+            <Button variant={"default"} className={"p-6"}><FilesIcon/>{t("catalog.manage_catalogs")}</Button>
+            <Button variant={"default"} className={"p-6"}><FileTerminal/>{t("catalog.generate_catalog")}</Button>
           </div>
           <Separator className={"mx-3"} orientation={"vertical"}/>
           <div className={"flex flex-col flex-1 space-y-3"}>
-            <H1 text={t("sections")} side={'center'}/>
+            <H1 text={t("section.sections")} side={'center'}/>
             <Separator/>
             {AppWrapper()}
           </div>

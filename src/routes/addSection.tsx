@@ -12,8 +12,9 @@ export default function AddSectionPage (): ReactElement{
     <div className="flex flex-col h-full">
       <Header back name={"Nova seção"}/>
       <div className="flex flex-1 flex-col p-3 w-full">
-        <H1 text={t("new_section")} side={"center"}/>
-        <Separator className="my-3"/>
+        <H1 text={t("section.new_section")} side={"center"}/>
+        <small className="flex flex-1 justify-center">{t("section.new_section_sub")}</small>
+        <Separator className="my-5" />
         <NewSection />
       </div>
     </div>

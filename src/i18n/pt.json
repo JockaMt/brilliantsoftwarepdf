@@ -1,58 +1,118 @@
 {
-  "home": "Início",
-  "profile": "Perfil",
-  "back": "Voltar",
-  "add_section": "Adicionar seção",
-  "options": "Opções",
-  "sections": "Seções",
-  "new_section": "Nova seção",
-  "add_item": "Adicionar item",
-  "manage_catalogs": "Gerenciar catálogos",
-  "generate_catalog": "Gerar catálogo",
-  "actions": "Ações",
-  "filter": "Filtro",
-  "search": "Buscar...",
-  "next": "Próximo",
-  "previous": "Anterior",
-  "no_results": "Sem resultados",
-  "show": "Mostrar",
-  "name": "Nome",
-  "items": "Itens",
-  "code": "Código",
-  "description": "Descrição",
-  "select_all": "Selecionar tudo",
-  "deselect_all": "Desmarcar tudo",
-  "delete": "Excluir",
-  "submit": "Enviar",
-  "section_name": "Nome da seção",
-  "placeholder_section": "Anéis, cadeiras, etc...",
-  "new_section_desc": "Adicione novas seções para gerar o catálogo",
-  "info": "Informações",
-  "info_desc": "Informações do software",
-  "social_media": "Redes sociais",
-  "social_media_desc": "Seu endereço na web",
-  "path": "Caminho de salvamento",
-  "copy_right": "Direitos autorais",
-  "version": "Versão",
-  "dev": "Desenvolvedor",
-  "settings": "Configurações",
-  "settings_desc": "Tudo sobre o seu catálogo",
-  "update_avaliabe": "Atualização disponível",
-  "update_avaliabe_desc": "Atualize agora para a nova versão",
-  "update": "Atualizar",
-  "check_for_updates": "Verificar atualizações",
-  "checking_for_updates": "Verificando atualizações...",
-  "language": "Idioma",
-  "edit_name": "Editar nome",
-  "edit_image": "Editar imagem",
-  "edit_palette": "Editar paleta",
-  "edit_phone": "Editar número",
-  "import_catalog": "Importar catálogo",
-  "export_catalog": "Exportar catálogo",
-  "save_location": "Onde salvar",
-  "delete_catalog": "Deletar catálogo",
-  "report_bug": "Reportar erro",
-  "pt": "Português",
-  "en": "Inglês",
-  "es": "Espanhol"
+  "general": {
+    "home": "Início",
+    "profile": "Perfil",
+    "back": "Voltar",
+    "options": "Opções",
+    "actions": "Ações",
+    "filter": "Filtro",
+    "search": "Buscar...",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "no_results": "Sem resultados",
+    "show": "Mostrar",
+    "delete": "Excluir",
+    "submit": "Adicionar",
+    "loading": "Carregando",
+    "menu": "Menu"
+  },
+
+  "item": {
+    "new_item": "Novo item",
+    "new_item_sub": "Adicionar novos items",
+    "add_item": "Adicionar item",
+    "add_form_item": "Adicionar campo",
+    "item_image": "Selecione uma imagem",
+    "image_button": "Escolher imagem",
+    "item_description": "Descrição do item",
+    "placeholder_item": "Anel de ouro infinito, corrente masculina com tranca cadeado, etc.",
+    "code": "Código",
+    "name": "Nome",
+    "description": "Descrição",
+    "items": "Itens",
+    "ex_weight": "Ex: Peso",
+    "ex_weight_value": "Ex: 7g",
+    "submit": "Adicionar",
+    "item_code": "Código do item",
+    "item_code_desc": "Ex: 00510",
+    "remove": "Remover campo",
+    "optional_fields": "Campos adicionais"
+  },
+
+  "section": {
+    "sections": "Seções",
+    "new_section": "Nova seção",
+    "new_section_sub": "Adicionar novas seções",
+    "new_section_desc": "Adicione novas seções para gerar o catálogo",
+    "add_section": "Adicionar seção",
+    "section_name": "Nome da seção",
+    "placeholder_section": "Anéis, cadeiras, etc..."
+  },
+
+  "catalog": {
+    "manage_catalogs": "Gerenciar catálogos",
+    "generate_catalog": "Gerar catálogo",
+    "import_catalog": "Importar catálogo",
+    "export_catalog": "Exportar catálogo",
+    "delete_catalog": "Deletar catálogo",
+    "save_location": "Onde salvar"
+  },
+
+  "validation": {
+    "image_required": "A imagem é obrigatória.",
+    "code_required": "O código é obrigatório.",
+    "name_required": "O nome do item é obrigatório.",
+    "value_required": "O valor do item é obrigatório.",
+    "at_least_one_item": "Você deve adicionar pelo menos um item.",
+    "delete_items_desc": "Remover items",
+    "delete_items_verify": "Tem certeza que deseja remover"
+  },
+
+  "edit": {
+    "edit_name": "Editar nome",
+    "edit_image": "Editar imagem",
+    "edit_palette": "Editar paleta",
+    "edit_phone": "Editar número"
+  },
+
+  "settings": {
+    "settings": "Configurações",
+    "settings_desc": "Tudo sobre o seu catálogo",
+    "language": "Idioma",
+    "pt": "Português",
+    "en": "English",
+    "es": "Español"
+  },
+
+  "update": {
+    "update_avaliabe": "Atualização disponível",
+    "update_avaliabe_desc": "Atualize agora para a nova versão",
+    "update": "Atualizar",
+    "check_for_updates": "Verificar atualizações",
+    "checking_for_updates": "Verificando atualizações...",
+    "downloading": "Baixando atualizações",
+    "download_erro": "Falha ao atualizar, tente novamente mais tarde"
+  },
+
+  "info": {
+    "info": "Informações",
+    "info_desc": "Informações do software",
+    "social_media": "Redes sociais",
+    "social_media_desc": "Seu endereço na web",
+    "path": "Caminho de salvamento",
+    "copy_right": "Direitos autorais",
+    "version": "Versão",
+    "dev": "Desenvolvedor",
+    "default_name": "Nome de usuário",
+    "help": "Ajuda"
+  },
+
+  "multi_select": {
+    "select_all": "Selecionar tudo",
+    "deselect_all": "Desmarcar tudo"
+  },
+
+  "feedback": {
+    "report_bug": "Reportar erro"
+  }
 }

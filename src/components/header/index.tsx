@@ -18,7 +18,7 @@ export function Header(props: HeaderProps) {
           <Label className={"absolute cursor-pointer px-5 top-0 h-20 text-white"}>
           <ChevronLeft/>
             <Button variant={"link"} className={"text-white"} onClick={() => navigate(-1)}>
-              {t("back")}
+              {t("general.back")}
             </Button>
           </Label>
         )}
