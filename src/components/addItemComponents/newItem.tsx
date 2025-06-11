@@ -7,34 +7,67 @@ import { Input } from "@/components/ui/input"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { CheckIcon, ChevronDownIcon, PlusCircleIcon, SquarePlus, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { CheckIcon, ChevronDownIcon, CircleCheckIcon, PlusCircleIcon, SquarePlus, Trash2 } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
-import { fakeDatabase } from "@/assets/fakeDatabase"
-
-
-const SECTIONS = fakeDatabase.map((item) => item.name)
-
+import { useParams } from "react-router"
+import { ISection } from "@/@types/interfaces/types"
+import { useGetItem } from "@/hooks/useItem"
+import { invoke } from "@tauri-apps/api/core"
 
 export default function NewItem() {
   const { t } = useTranslation();
+  const params = useParams();
+  const [sections, setSections] = useState<ISection[]>([])
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [existingImage, setExistingImage] = useState<string | null>(null);
   const form = useForm<z.infer<ReturnType<typeof getFormSchema>>>({
     resolver: zodResolver(getFormSchema(t)),
     defaultValues: {
       image: undefined,
       section: undefined,
       code: undefined,
-      items: [{ name: "", value: "" }]
+      description: undefined,
+      items: undefined
     }
   })
+
+  
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "items"
   })
 
-  function onSubmit(values: z.infer<ReturnType<typeof getFormSchema>>) {
+  useEffect(() => {
+    invoke<ISection[]>("get_all_sections").then(setSections)
+    if (params.id) {
+      const id = params.id.split("=")[1];
+      const selectedItem = useGetItem(id);
+
+      if (selectedItem) {
+        form.reset({
+          code: selectedItem.code,
+          section: selectedItem.section_id,
+          description: selectedItem.description,
+          items: selectedItem.infos.map(info => ({
+            id: info.id,
+            name: info.name ?? "",
+            details: info.details
+          })),
+          image: undefined
+        });
+
+        setExistingImage(selectedItem.image ?? null);
+      }
+    }
+  }, []); // roda só uma vez
+
+
+
+
+  const onSubmit = (values: z.infer<ReturnType<typeof getFormSchema>>) => {
     console.log(values)
   }
 
@@ -46,40 +79,52 @@ export default function NewItem() {
             control={form.control}
             name="image"
             render={({ field }) => {
-              const [fileName, setFileName] = useState<string | null>(null)
+              const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
               const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                const file = e.target.files?.[0]
+                const file = e.target.files?.[0];
                 if (file) {
-                  setFileName(file.name)
-                  field.onChange(e) // necessário para o RHF
+                  setFileName(file.name);
+                  field.onChange(file); // RHF recebe o File
+                  setPreviewUrl(URL.createObjectURL(file)); // gera preview local
                 }
-              }
+              };
+
               return (
                 <FormItem>
                   <FormLabel>{t("item.item_image")}</FormLabel>
                   <FormControl>
-                    <Label className="flex flex-1 w-full cursor-pointer">
-                      <Button
-                        onClick={() => document.getElementById('my-file-input')?.click()}
-                        type="button"
-                        variant="outline"
-                        className="flex flex-1 w-full pointer-events-none justify-start"
-                      >
-                        {fileName || (t("item.image_button") + "  ...")}
-                      </Button>
-                      <Input
-                        type="file"
-                        className="hidden"
-                        {...field}
-                        onChange={handleFileChange}
-                        id="my-file-input"
-                      />
-                    </Label>
+                    <div className="flex gap-3">
+                      {(previewUrl || existingImage) && (
+                        <img
+                          src={previewUrl || existingImage!}
+                          alt="Preview da imagem"
+                          className="flex h-9 w-9 object-cover rounded-md border"
+                        />
+                      )}
+                      <Label className="flex w-full cursor-pointer">
+                        <Button
+                          type="button"
+                          onClick={() =>
+                            document.getElementById("file-input")?.click()
+                          }
+                          className="flex w-full pointer-events-none justify-start bg-white text-black border hover:text-white"
+                        >
+                          {fileName || t("item.image_button") + " ..."}
+                        </Button>
+                        <Input
+                          type="file"
+                          id="file-input"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                        />
+                      </Label>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              )
+              );
             }}
           />
           <FormField
@@ -103,20 +148,38 @@ export default function NewItem() {
           />
           <FormField
             control={form.control}
+            name="description"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>{t("item.item_description")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      {...field}
+                      placeholder={t("item.item_description_placeholder")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )
+            }}
+          />
+          <FormField
+            control={form.control}
             name="section"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Seção</FormLabel>
+                <FormLabel>{t("section.sections")}</FormLabel>
                 <FormControl>
                   <Popover>
                     <PopoverTrigger>
                       <Button
                         type="button"
-                        variant="outline"
                         role="combobox"
-                        className="flex w-full justify-between"
+                        className="flex w-full justify-between  bg-white text-black capitalize border hover:text-white"
                       >
-                        {form.getValues().section || t("item.select_section")}
+                        {form.getValues().section || t("item.select_section") + " ..."}
                         <ChevronDownIcon className="ml-2 h-4 w-4 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -125,17 +188,18 @@ export default function NewItem() {
                         <CommandInput placeholder="Buscar seção..." />
                         <CommandEmpty>Nenhuma seção encontrada.</CommandEmpty>
                         <CommandGroup>
-                          {SECTIONS.map((section) => (
+                          {sections.map((section) => (
                             <CommandItem
-                              key={section}
-                              value={section}
+                              key={section.name}
+                              value={section.name}
                               onSelect={() => {
-                                form.setValue("section", section)
+                                form.setValue("section", section.name)
                                 form.clearErrors("section")
                               }}
+                              className="capitalize"
                             >
-                              {section}
-                              {field.value === section && (
+                              {section.name}
+                              {field.value === section.name && (
                                 <CheckIcon className="ml-auto h-4 w-4" />
                               )}
                             </CommandItem>
@@ -157,9 +221,9 @@ export default function NewItem() {
                 name={`items.${index}.name`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome do campo</FormLabel>
+                    <FormLabel>Nome do item</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("item.ex_weight")} {...field} />
+                      <Input placeholder={t("item.ex_item_name")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -167,33 +231,40 @@ export default function NewItem() {
               />
               <FormField
                 control={form.control}
-                name={`items.${index}.value`}
+                name={`items.${index}.details`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Valor</FormLabel>
+                    <FormLabel>Detalhes</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("item.ex_weight_value")} {...field} />
+                      <Input placeholder={t("item.ex_item_details")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <Button type="button" variant="destructive" onClick={() => remove(index)}>
-                <Trash2 />{t("item.remove")}
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t("item.remove")}
               </Button>
             </div>
           ))}
+
           <div className="flex justify-between">
             <Button
               type="button"
               variant="secondary"
-              onClick={() => append({ name: "", value: "" })}
+              onClick={() =>
+                append({
+                  id: crypto.randomUUID(),         // ou use uma função geradora de ID
+                  name: "",
+                  details: "",
+                })
+              }
             >
-              <SquarePlus />
+              <SquarePlus className="mr-2 h-4 w-4" />
               {t("item.add_form_item")}
             </Button>
-
-            <Button type="submit"><PlusCircleIcon />{t("item.submit")}</Button>
+            <Button type="submit">{params.id ? <CircleCheckIcon /> : <PlusCircleIcon />}{t(params.id ? "item.update" : "item.submit")}</Button>
           </div>
         </form>
       </Form>

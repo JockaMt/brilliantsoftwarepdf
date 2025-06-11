@@ -1,14 +1,41 @@
+mod db;
 mod updater;
+mod models;
+mod commands;
 
-pub use updater::{ check_for_update, download_and_install_update };
+use commands::*;
+use commands::DbConn;
 
-pub fn run() {
+use db::connection;
+use rusqlite::Connection;
+
+pub use updater::{check_for_update, download_and_install_update};
+
+pub async fn run() {
+    let conn: Connection = connection::database_connect();
+
     tauri::Builder::default()
-        .plugin(tauri_plugin_updater::Builder::new().build()) // registra o state aqui!
+        .manage(DbConn(std::sync::Mutex::new(conn)))
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             check_for_update,
-            download_and_install_update
+            download_and_install_update,
+            create_section,
+            get_section,
+            list_sections,
+            update_section,
+            delete_section,
+            create_item,
+            get_item,
+            list_items,
+            update_item,
+            delete_item,
+            create_info,
+            get_info,
+            list_infos,
+            update_info,
+            delete_info,
         ])
         .run(tauri::generate_context!())
         .unwrap();

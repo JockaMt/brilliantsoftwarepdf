@@ -1,12 +1,4 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table.tsx";
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel,
-  SortingState,
-  useReactTable,
-  VisibilityState
-} from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator.tsx";
 import { Button } from "@/components/ui/button.tsx";
@@ -17,62 +9,45 @@ import { H1 } from "@/components/titles/h1";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { useTranslation } from "react-i18next";
+import tableDef from "./tableDef";
+import { ColumnDef, flexRender } from "@tanstack/react-table";
+import { useNavigate } from "react-router";
+import { invoke } from "@tauri-apps/api/core";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   search: string
-}
-
-function tableDef<TData, TValue>(data: TData[], columns: ColumnDef<TData, TValue>[]) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
-
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
-  })
-  return table;
+  path: string
+  reload: () => void
 }
 
 export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TData, TValue>) {
   const table = tableDef(props.data, props.columns);
   const { t } = useTranslation()
   const [selectedItems, setSelectedItems] = useState<string[]>([])
+  const navigate = useNavigate();
 
   const selectAll = () => {
     setSelectedItems(
-      table.getSelectedRowModel().rows.map(e => (e.original as { name: string }).name)
+      table.getSelectedRowModel().rows.map(e => (e.original as { id: string }).id)
     )
+  }
+
+  const configItem = (e: string) => { navigate(`/new-${props.path}/id=${e}`) }
+
+  const handleDelete = () => {
+    selectedItems.map((selectedItem)=>{
+      invoke(`delete_${props.path}`, {uuid: selectedItem})
+    })
+    setSelectedItems([])
+    table.toggleAllRowsSelected(false)
+    props.reload();
   }
 
   useEffect(() => {
     selectAll()
   }, [table.getState().rowSelection])
-
-  useEffect(() => {
-  }, [selectedItems]);
 
   return (
     <div className="flex flex-col">
@@ -133,7 +108,7 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
                     <Button variant="ghost">{t("general.back")}</Button>
                   </DialogClose>
                   <DialogClose asChild>
-                    <Button variant="destructive" type="submit">{t("general.delete")}</Button>
+                    <Button onClick={handleDelete} variant="destructive">{t("general.delete")}</Button>
                   </DialogClose>
                 </DialogFooter>
               </DialogContent>
@@ -175,7 +150,7 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
                     <TableCell
                       key={cell.id}
                       className="cursor-pointer"
-                      onClick={() => console.log(cell.getContext().row.original)}
+                      onClick={() => configItem((cell.row.original as { id: string }).id)}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>

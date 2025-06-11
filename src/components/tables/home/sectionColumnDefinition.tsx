@@ -2,13 +2,13 @@ import {Column, ColumnDef} from "@tanstack/react-table";
 import {Checkbox} from '@/components/ui/checkbox.tsx';
 import {SortDescIcon} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
-import {ISectionData} from "@/@types/interfaces/types.ts";
+import {ISection} from "@/@types/interfaces/types.ts";
 import { useTranslation } from "react-i18next";
 
 
 interface IButtonFilter {
   translationKey: string
-  column: Column<ISectionData, unknown>
+  column: Column<ISection, unknown>
 }
 
 function ButtonFilter (props: IButtonFilter) {
@@ -25,7 +25,7 @@ function ButtonFilter (props: IButtonFilter) {
   )
 }
 
-export const columns: ColumnDef<ISectionData>[] = [
+export const columns: ColumnDef<ISection>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -71,7 +71,7 @@ export const columns: ColumnDef<ISectionData>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <div className="w-auto text-right">{row.original.items}</div>
+      <div className="w-auto text-right">{row.original.items.length}</div>
     ),
   },
 ]

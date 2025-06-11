@@ -1,29 +1,21 @@
-export interface ISection {
-  id: string
-  name: string
-}
-
 export interface IInfo {
   id: string;
-  item_id: string;
+  name: string;
   details: string;
 }
 
 export interface IItem {
   id: string,
-  code?: number
+  code: string,
   image: string,
   description: string,
-  section: ISection,
+  section_id: string,
   infos: IInfo[],
-  loss: number,
-  time: number,
 }
 
 
-
-export interface ISectionData {
+export interface ISection {
   id: string
   name: string
-  items: number
+  items: IItem[]
 }

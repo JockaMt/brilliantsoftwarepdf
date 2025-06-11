@@ -22,6 +22,8 @@
     "new_item_sub": "Adicionar novos items",
     "add_item": "Adicionar item",
     "add_form_item": "Adicionar campo",
+    "update_item": "Atualizar item",
+    "update": "Atualizar",
     "item_image": "Selecione uma imagem",
     "image_button": "Escolher imagem",
     "item_description": "Descrição do item",
@@ -36,7 +38,9 @@
     "item_code": "Código do item",
     "item_code_desc": "Ex: 00510",
     "remove": "Remover campo",
-    "optional_fields": "Campos adicionais"
+    "optional_fields": "Campos adicionais",
+    "select_section": "Selecionar seção",
+    "item_description_placeholder": "Ex: Anel de ouro 16kr"
   },
 
   "section": {
@@ -44,6 +48,10 @@
     "new_section": "Nova seção",
     "new_section_sub": "Adicionar novas seções",
     "new_section_desc": "Adicione novas seções para gerar o catálogo",
+    "new_section_success": "Seção criada com sucesso",
+    "update_section": "Editar seção",
+    "update_section_sub": "Editar Informações da seção",
+    "update_section_desc": "Renomei seções do seu catálogo",
     "add_section": "Adicionar seção",
     "section_name": "Nome da seção",
     "placeholder_section": "Anéis, cadeiras, etc..."
@@ -65,7 +73,8 @@
     "value_required": "O valor do item é obrigatório.",
     "at_least_one_item": "Você deve adicionar pelo menos um item.",
     "delete_items_desc": "Remover items",
-    "delete_items_verify": "Tem certeza que deseja remover"
+    "delete_items_verify": "Tem certeza que deseja remover",
+    "description_required": "A descrição é obrigatória"
   },
 
   "edit": {
