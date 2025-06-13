@@ -14,11 +14,10 @@ import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { useEffect, useState } from "react";
 import { CircleCheckIcon, LoaderCircleIcon, PlusCircleIcon } from "lucide-react";
-import { fakeItems } from "@/assets/fakeSectionItens.ts";
 import { columnsItems } from "@/components/tables/addSection/addSectionColumnDefinition.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
 import { formSchema } from "@/components/addSectionComponents/addSectionSchema.ts";
-import { IItem, ISection } from "@/@types/interfaces/types.ts";
+import { IItem } from "@/@types/interfaces/types.ts";
 import TableSet from "@/components/tables/tableTemplate";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
@@ -30,13 +29,16 @@ import { toast } from "sonner";
 function AppWrapper() {
   const [data, setData] = useState<IItem[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const params = useParams();
+  const rawId: string | undefined = params.id?.split("=")[1]
   const { t } = useTranslation();
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const item = fakeItems //await invoke<IItem[]>("get_items_from_section");
-      setData(item);
+      invoke<IItem[]>("list_items", { sectionId: rawId }).then((item) => {
+        setData(item);
+      });
     } catch (e) {
       console.error("Erro ao carregar item:", e);
     } finally {
@@ -84,7 +86,12 @@ export default function NewItem() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (params.id) {
       if (values.section !== undefined) {
-        invoke("update_section", { uuid: rawId, name: values.section }).then()
+        invoke("update_section", { uuid: rawId, name: values.section }).then(() => {
+          toast.success("Seção atualizada com sucesso!");
+        }).catch((err) => {
+          console.error("Erro ao criar seção:", err);
+          toast.error("Erro ao criar seção.");
+        })
       }
     } else {
       invoke("create_section", { name: values.section })

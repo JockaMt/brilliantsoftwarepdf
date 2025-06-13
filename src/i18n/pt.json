@@ -71,10 +71,11 @@
     "code_required": "O código é obrigatório.",
     "name_required": "O nome do item é obrigatório.",
     "value_required": "O valor do item é obrigatório.",
+    "section_required": "A seção é obrigatória.",
     "at_least_one_item": "Você deve adicionar pelo menos um item.",
     "delete_items_desc": "Remover items",
     "delete_items_verify": "Tem certeza que deseja remover",
-    "description_required": "A descrição é obrigatória"
+    "description_required": "A descrição é obrigatória."
   },
 
   "edit": {

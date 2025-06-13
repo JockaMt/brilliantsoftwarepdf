@@ -7,9 +7,3 @@ pub struct Info {
     pub name: String,        // nome da informação
     pub details: String,     // detalhes da informação
 }
-
-impl Info {
-    pub fn new(id: String, section_id: String, name: String, details: String) -> Self {
-        Self { id, section_id, name, details }
-    }
-}

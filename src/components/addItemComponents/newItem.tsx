@@ -11,13 +11,15 @@ import { useEffect, useState } from "react"
 import { CheckIcon, ChevronDownIcon, CircleCheckIcon, PlusCircleIcon, SquarePlus, Trash2 } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { ISection } from "@/@types/interfaces/types"
 import { useGetItem } from "@/hooks/useItem"
 import { invoke } from "@tauri-apps/api/core"
+import { toast } from "sonner"
 
 export default function NewItem() {
   const { t } = useTranslation();
+  const navigate = useNavigate()
   const params = useParams();
   const [sections, setSections] = useState<ISection[]>([])
   const [fileName, setFileName] = useState<string | null>(null);
@@ -33,15 +35,13 @@ export default function NewItem() {
     }
   })
 
-  
-
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "items"
   })
 
   useEffect(() => {
-    invoke<ISection[]>("get_all_sections").then(setSections)
+    invoke<ISection[]>("list_sections").then(setSections)
     if (params.id) {
       const id = params.id.split("=")[1];
       const selectedItem = useGetItem(id);
@@ -59,16 +59,31 @@ export default function NewItem() {
           image: undefined
         });
 
-        setExistingImage(selectedItem.image ?? null);
+        setExistingImage(selectedItem.image_path ?? null);
       }
     }
-  }, []); // roda só uma vez
+  }, []);
 
-
-
-
-  const onSubmit = (values: z.infer<ReturnType<typeof getFormSchema>>) => {
-    console.log(values)
+  const onSubmit = async (values: z.infer<ReturnType<typeof getFormSchema>>) => {
+    const section: {id: string, name: string} = await invoke("get_section_by_name", {name: values.section});
+    values.image.arrayBuffer().then((buffer) => {
+      const byteArray = Array.from(new Uint8Array(buffer))
+      invoke<string>("save_image", {
+        image: byteArray,
+        code: values.code
+      }).then((imagePath) => {
+        try {
+          const loading_toast = toast.loading("item.creating_item")
+          invoke("create_item", { code: values.code, description: values.description, sectionId: section.id, imagePath: imagePath }).then(() => {
+            toast.dismiss(loading_toast)
+            toast.success(t("item.created_successfully"))
+            navigate(-1)
+          });
+        } catch {
+          toast.warning(t("item.item_not_created"))
+        }
+      });
+    });
   }
 
   return (

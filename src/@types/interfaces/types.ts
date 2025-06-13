@@ -1,16 +1,15 @@
 export interface IInfo {
-  id: string;
-  name: string;
-  details: string;
+  id: string
+  name: string
+  details: string
 }
 
 export interface IItem {
-  id: string,
-  code: string,
-  image: string,
-  description: string,
-  section_id: string,
-  infos: IInfo[],
+  code: string
+  image_path: string
+  description: string
+  section_id: string
+  infos: IInfo[]
 }
 
 

@@ -23,6 +23,7 @@ pub async fn run() {
             download_and_install_update,
             create_section,
             get_section,
+            get_section_by_name,
             list_sections,
             update_section,
             delete_section,
@@ -36,6 +37,7 @@ pub async fn run() {
             list_infos,
             update_info,
             delete_info,
+            save_image
         ])
         .run(tauri::generate_context!())
         .unwrap();
