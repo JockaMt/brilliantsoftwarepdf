@@ -26,7 +26,8 @@ pub fn get_section(conn: &Connection, id: &str) -> Result<Option<Section>> {
     let mut stmt = conn.prepare("SELECT id, name FROM sections WHERE id = ?1")?;
     let mut rows = stmt.query(params![id])?;
 
-    if let Some(row) = rows.next()? {
+    if let Some(row) = rows.next()?
+    {
         Ok(Some(Section {
             id: row.get(0)?,
             name: row.get(1)?,
@@ -40,7 +41,8 @@ pub fn get_section_by_name(conn: &Connection, name: &str) -> Result<Option<Secti
     let mut stmt = conn.prepare("SELECT id, name FROM sections WHERE name = ?1")?;
     let mut rows = stmt.query(params![name])?;
 
-    if let Some(row) = rows.next()? {
+    if let Some(row) = rows.next()?
+    {
         Ok(Some(Section {
             id: row.get(0)?,
             name: row.get(1)?,
@@ -77,4 +79,10 @@ pub fn list_sections(conn: &Connection) -> Result<Vec<Section>> {
         sections.push(section?);
     }
     Ok(sections)
+}
+
+pub fn has_sections(db: &Connection) -> Result<bool> {
+    let mut stmt = db.prepare("SELECT count(*) FROM sections")?;
+    let count: i32 = stmt.query_row([], |row| row.get(0))?;
+    Ok(count > 0)
 }

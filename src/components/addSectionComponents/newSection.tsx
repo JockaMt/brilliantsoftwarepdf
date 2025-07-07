@@ -20,7 +20,7 @@ import { formSchema } from "@/components/addSectionComponents/addSectionSchema.t
 import { IItem } from "@/@types/interfaces/types.ts";
 import TableSet from "@/components/tables/tableTemplate";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useGetSection } from "@/hooks/useSection";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
@@ -29,25 +29,25 @@ import { toast } from "sonner";
 function AppWrapper() {
   const [data, setData] = useState<IItem[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const params = useParams();
-  const rawId: string | undefined = params.id?.split("=")[1]
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
   const { t } = useTranslation();
 
   const loadData = async () => {
-    setLoading(true);
+    if (id) {setLoading(true);
     try {
-      invoke<IItem[]>("list_items", { sectionId: rawId }).then((item) => {
+      invoke<IItem[]>("list_items", { sectionId: id }).then((item) => {
         setData(item);
       });
     } catch (e) {
       console.error("Erro ao carregar item:", e);
     } finally {
       setLoading(false);
-    }
+    }}
   };
 
   useEffect(() => {
-    loadData();
+    loadData().then(()=> setLoading(false));
   }, []);
 
   if (loading) return (
@@ -73,9 +73,9 @@ function AppWrapper() {
 
 export default function NewItem() {
   const { t } = useTranslation();
-  const params = useParams();
   const navigate = useNavigate();
-  const rawId: string | undefined = params.id?.split("=")[1]
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -84,13 +84,14 @@ export default function NewItem() {
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    if (params.id) {
+    if (id) {
       if (values.section !== undefined) {
-        invoke("update_section", { uuid: rawId, name: values.section }).then(() => {
+        invoke("update_section", { uuid: id, name: values.section }).then(() => {
           toast.success("Seção atualizada com sucesso!");
         }).catch((err) => {
-          console.error("Erro ao criar seção:", err);
-          toast.error("Erro ao criar seção.");
+          if (err.toString().includes("UNIQUE")) {
+            toast.warning(t("section.alrealy_exists"));
+          }
         })
       }
     } else {
@@ -101,15 +102,16 @@ export default function NewItem() {
           navigate(-1);
         })
         .catch((err) => {
-          console.error("Erro ao criar seção:", err);
-          toast.error("Erro ao criar seção.");
+          if (err.toString().includes("UNIQUE")) {
+            toast.warning(t("section.alrealy_exists"));
+          }
         });
     }
   }
 
   useEffect(() => {
-    if (rawId) {
-      useGetSection(rawId).then((section) => {
+    if (id) {
+      useGetSection(id).then((section) => {
         if (section) {
           form.setValue("section", section.name)
         }
@@ -118,7 +120,7 @@ export default function NewItem() {
   }, [])
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full max-w-[1280px] w-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -130,7 +132,7 @@ export default function NewItem() {
                 <FormControl>
                   <div className="flex flex-row space-x-3">
                     <Input className="capitalize" placeholder={t("section.placeholder_section")} {...field} />
-                    <Button type="submit">{params.id ? <CircleCheckIcon /> : <PlusCircleIcon />}{params.id ? t("update.update") : t("general.submit")}</Button>
+                    <Button type="submit">{id ? <CircleCheckIcon /> : <PlusCircleIcon />}{id ? t("update.update") : t("general.submit")}</Button>
                   </div>
                 </FormControl>
                 <FormDescription className="text-[0.7rem]">
@@ -143,6 +145,10 @@ export default function NewItem() {
         </form>
       </Form>
       <Separator className="my-3" />
+      <div className="flex justify-end items-center gap-3 pb-3">
+        {t("section.new_item")}
+        <Button onClick={()=> navigate(`/new-item?section=${id}`)}>{t("item.add_item")}</Button>
+      </div>
       <AppWrapper />
     </div>
   )

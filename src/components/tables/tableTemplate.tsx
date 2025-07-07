@@ -13,6 +13,7 @@ import tableDef from "./tableDef";
 import { ColumnDef, flexRender } from "@tanstack/react-table";
 import { useNavigate } from "react-router";
 import { invoke } from "@tauri-apps/api/core";
+import { toast } from "sonner";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -34,16 +35,31 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
     )
   }
 
-  const configItem = (e: string) => { navigate(`/new-${props.path}/id=${e}`) }
+  const configItem = (e: string) => { navigate(`/new-${props.path}?id=${e}`) }
 
-  const handleDelete = () => {
-    selectedItems.map((selectedItem)=>{
-      invoke(`delete_${props.path}`, {uuid: selectedItem})
-    })
-    setSelectedItems([])
-    table.toggleAllRowsSelected(false)
-    props.reload();
-  }
+  const handleDelete = async () => {
+    try {
+      // Executa todas as exclusões em paralelo e aguarda conclusão
+      await Promise.all(
+        selectedItems.map(selectedItem =>
+          invoke(`delete_${props.path}`, { id: selectedItem })
+        )
+      );
+
+      // Atualiza os dados chamando a função reload passada via props
+      props.reload();
+      // Limpa a seleção
+      setSelectedItems([]);
+      table.toggleAllRowsSelected(false);
+
+      // Feedback visual
+      toast.success(t("general.delete_success"));
+      window.location.reload();
+    } catch (error) {
+      toast.error(t("general.delete_error"));
+      console.error("Erro ao excluir itens:", error);
+    }
+  };
 
   useEffect(() => {
     selectAll()
@@ -108,7 +124,7 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
                     <Button variant="ghost">{t("general.back")}</Button>
                   </DialogClose>
                   <DialogClose asChild>
-                    <Button onClick={handleDelete} variant="destructive">{t("general.delete")}</Button>
+                    <Button onClick={() => handleDelete()} variant="destructive">{t("general.delete")}</Button>
                   </DialogClose>
                 </DialogFooter>
               </DialogContent>

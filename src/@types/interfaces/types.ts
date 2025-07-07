@@ -1,10 +1,11 @@
 export interface IInfo {
-  id: string
+  id?: string
   name: string
   details: string
 }
 
 export interface IItem {
+  id?: String
   code: string
   image_path: string
   description: string

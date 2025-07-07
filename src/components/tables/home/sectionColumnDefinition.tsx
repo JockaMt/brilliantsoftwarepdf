@@ -58,7 +58,7 @@ export const columns: ColumnDef<ISection>[] = [
       <ButtonFilter translationKey="item.name" column={column}/>
     ),
     cell: ({ row }) => (
-      <span className="flex w-fit text-wrap h-5 shrink-0 overflow-hidden pl-3">
+      <span className="flex w-fit capitalize text-wrap h-5 shrink-0 overflow-hidden pl-3">
         {row.original.name}
       </span>
     ),

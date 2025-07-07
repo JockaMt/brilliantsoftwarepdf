@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <Route path={"/"} element={<Home/>}/>
           <Route path={"/profile"} element={<Profile/>}/>
           <Route path={"/new-section/:id?"} element={<AddSectionPage/>}/>
-          <Route path={"/new-item/:id?"} element={<AddItemPage/>}/>
+          <Route path={"/new-item/:id?/:section?"} element={<AddItemPage/>}/>
         </Routes>
       </Layout>
     </BrowserRouter></ProfileProvider>

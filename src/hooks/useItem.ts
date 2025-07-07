@@ -1,9 +1,18 @@
+import { useEffect, useState } from "react";
 import { IItem } from "@/@types/interfaces/types";
-import { fakeItems } from "@/assets/fakeSectionItens";
+import { invoke } from "@tauri-apps/api/core";
 
-export function useGetItem (id: string): IItem | undefined {
-  //Query para pegar o item
-  const item: IItem | undefined = fakeItems.find((e: IItem) => e.id === id)
-  console.log(id, item)
-  if (item) return item
+export function useGetItem(id: string) {
+  const [item, setItem] = useState<IItem>();
+
+  useEffect(() => {
+    if (!id) return;
+
+    invoke<IItem>("get_item", { id })
+      .then((fetchedItem) => {
+        setItem(fetchedItem);
+      })
+  }, [id]);
+
+  return item;
 }

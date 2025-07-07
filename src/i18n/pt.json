@@ -14,7 +14,10 @@
     "delete": "Excluir",
     "submit": "Adicionar",
     "loading": "Carregando",
-    "menu": "Menu"
+    "menu": "Menu",
+    "delete_success": "Excluído com sucesso",
+    "delete_errorr": "Erro ao excluir",
+    "save": "Salvar"
   },
 
   "item": {
@@ -24,6 +27,7 @@
     "add_form_item": "Adicionar campo",
     "update_item": "Atualizar item",
     "update": "Atualizar",
+    "delete": "Deletar",
     "item_image": "Selecione uma imagem",
     "image_button": "Escolher imagem",
     "item_description": "Descrição do item",
@@ -40,7 +44,10 @@
     "remove": "Remover campo",
     "optional_fields": "Campos adicionais",
     "select_section": "Selecionar seção",
-    "item_description_placeholder": "Ex: Anel de ouro 16kr"
+    "item_description_placeholder": "Ex: Anel de ouro 16kr",
+    "alrealy_exists": "Já existe um item com este código.",
+    "ex_item_name": "Ex.: Peso em ouro",
+    "ex_item_details": "Ex.: 15g"
   },
 
   "section": {
@@ -54,7 +61,9 @@
     "update_section_desc": "Renomei seções do seu catálogo",
     "add_section": "Adicionar seção",
     "section_name": "Nome da seção",
-    "placeholder_section": "Anéis, cadeiras, etc..."
+    "placeholder_section": "Anéis, cadeiras, etc...",
+    "new_item": "Adicione um novo item a esta seção.",
+    "alrealy_exists": "Já existe uma seção com este nome."
   },
 
   "catalog": {
@@ -82,7 +91,9 @@
     "edit_name": "Editar nome",
     "edit_image": "Editar imagem",
     "edit_palette": "Editar paleta",
-    "edit_phone": "Editar número"
+    "edit_phone": "Editar número",
+    "edit_name_description": "Altere o nome do seu catálogo",
+    "edit_name_placeholder": "Nome do catálogo"
   },
 
   "settings": {
@@ -101,7 +112,8 @@
     "check_for_updates": "Verificar atualizações",
     "checking_for_updates": "Verificando atualizações...",
     "downloading": "Baixando atualizações",
-    "download_erro": "Falha ao atualizar, tente novamente mais tarde"
+    "download_erro": "Falha ao atualizar, tente novamente mais tarde.",
+    "all_up_to_date": "Última versão instalada."
   },
 
   "info": {

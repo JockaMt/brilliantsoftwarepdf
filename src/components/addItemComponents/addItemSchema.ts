@@ -12,10 +12,11 @@ export const getFormSchema = (t: (key: string) => string) =>
 
     description: z.string({message: t("validation.description_required")}).min(1, t("validation.description_required")),
 
-    items: z
+    infos: z
       .array(
         z.object({
-          id: z.string(),
+          db_id: z.string().optional(),
+          item_code: z.string().optional(),
           name: z.string().min(1, "Campo obrigatório"),
           details: z.string().min(1, "Campo obrigatório"),
         })

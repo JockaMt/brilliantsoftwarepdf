@@ -23,26 +23,27 @@ function getRandomItems(source: IInfo[], count: number): IInfo[] {
   return shuffled.slice(0, count);
 }
 
+// Replace 'id' with the correct property as defined in IItem, e.g., 'item_id' (adjust as per your IItem interface)
 export const fakeItems: IItem[] = [
-  { id: "1", code: "1001", image: "url/to/image.jpg", description: "Anel de ouro", section_id: "12", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "2", code: "1002", image: "url/to/image.jpg", description: "Colar de prata", section_id: "13", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "3", code: "1003", image: "url/to/image.jpg", description: "Pulseira de couro", section_id: "14", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "4", code: "1004", image: "url/to/image.jpg", description: "Brinco com pedra", section_id: "15", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "5", code: "1005", image: "url/to/image.jpg", description: "Pingente de prata", section_id: "16", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "6", code: "1006", image: "url/to/image.jpg", description: "Tornozeleira delicada", section_id: "17", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "7", code: "1007", image: "url/to/image.jpg", description: "Aliança de compromisso", section_id: "18", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "8", code: "1008", image: "url/to/image.jpg", description: "Broche vintage", section_id: "19", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "9", code: "1009", image: "url/to/image.jpg", description: "Relógio dourado", section_id: "20", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "10", code: "1010", image: "url/to/image.jpg", description: "Corrente fina", section_id: "21", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "11", code: "1011", image: "url/to/image.jpg", description: "Piercing pequeno", section_id: "22", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "12", code: "1012", image: "url/to/image.jpg", description: "Joia personalizada com nome", section_id: "23", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "13", code: "1013", image: "url/to/image.jpg", description: "Conjunto de anel e colar", section_id: "24", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "14", code: "1014", image: "url/to/image.jpg", description: "Joia infantil delicada", section_id: "25", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "15", code: "1015", image: "url/to/image.jpg", description: "Pulseira masculina", section_id: "26", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "16", code: "1016", image: "url/to/image.jpg", description: "Colar feminino elegante", section_id: "27", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "17", code: "1017", image: "url/to/image.jpg", description: "Pingente religioso", section_id: "28", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "18", code: "1018", image: "url/to/image.jpg", description: "Pingente com nome", section_id: "29", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "19", code: "1019", image: "url/to/image.jpg", description: "Joia com pedra natural", section_id: "30", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "20", code: "1020", image: "url/to/image.jpg", description: "Anel de noivado", section_id: "31", infos: getRandomItems(infoFake, Math.random() * 15) },
-  { id: "21", code: "1021", image: "url/to/image.jpg", description: "Anel de formatura", section_id: "32", infos: getRandomItems(infoFake, Math.random() * 15) }
+  { code: "1001", image_path: "url/to/image.jpg", description: "Anel de ouro", section_id: "12", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1002", image_path: "url/to/image.jpg", description: "Colar de prata", section_id: "13", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1003", image_path: "url/to/image.jpg", description: "Pulseira de couro", section_id: "14", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1004", image_path: "url/to/image.jpg", description: "Brinco com pedra", section_id: "15", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1005", image_path: "url/to/image.jpg", description: "Pingente de prata", section_id: "16", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1006", image_path: "url/to/image.jpg", description: "Tornozeleira delicada", section_id: "17", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1007", image_path: "url/to/image.jpg", description: "Aliança de compromisso", section_id: "18", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1008", image_path: "url/to/image.jpg", description: "Broche vintage", section_id: "19", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1009", image_path: "url/to/image.jpg", description: "Relógio dourado", section_id: "20", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1010", image_path: "url/to/image.jpg", description: "Corrente fina", section_id: "21", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1011", image_path: "url/to/image.jpg", description: "Piercing pequeno", section_id: "22", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1012", image_path: "url/to/image.jpg", description: "Joia personalizada com nome", section_id: "23", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1013", image_path: "url/to/image.jpg", description: "Conjunto de anel e colar", section_id: "24", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1014", image_path: "url/to/image.jpg", description: "Joia infantil delicada", section_id: "25", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1015", image_path: "url/to/image.jpg", description: "Pulseira masculina", section_id: "26", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1016", image_path: "url/to/image.jpg", description: "Colar feminino elegante", section_id: "27", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1017", image_path: "url/to/image.jpg", description: "Pingente religioso", section_id: "28", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1018", image_path: "url/to/image.jpg", description: "Pingente com nome", section_id: "29", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1019", image_path: "url/to/image.jpg", description: "Joia com pedra natural", section_id: "30", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1020", image_path: "url/to/image.jpg", description: "Anel de noivado", section_id: "31", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) },
+  { code: "1021", image_path: "url/to/image.jpg", description: "Anel de formatura", section_id: "32", infos: getRandomItems(infoFake, Math.floor(Math.random() * 15)) }
 ];

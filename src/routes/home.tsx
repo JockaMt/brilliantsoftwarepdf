@@ -6,7 +6,7 @@ import { CirclePlus, FilesIcon, FileTerminal, FolderPlusIcon, LoaderCircleIcon }
 import { columns } from "@/components/tables/home/sectionColumnDefinition.tsx";
 import { ReactElement, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { ISection } from "@/@types/interfaces/types.ts";
+import {ISection} from "@/@types/interfaces/types.ts";
 import TableSet from "@/components/tables/tableTemplate";
 import { useTranslation } from "react-i18next";
 import { invoke } from "@tauri-apps/api/core";
@@ -65,6 +65,12 @@ function AppWrapper() {
 export default function Home(): ReactElement {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const [hasItem, setHasItem] = useState(true)
+  const [hasSection, setHasSection] = useState(true)
+  useEffect(() => {
+    invoke<boolean>("has_items").then((res) => setHasItem(res))
+    invoke<boolean>("has_sections").then((res) => setHasSection(res))
+  }, [hasItem, hasSection]);
   return (
     <div className={"flex flex-col h-full"}>
       <Header name={t("general.home")} />
@@ -72,10 +78,10 @@ export default function Home(): ReactElement {
         <div className={"flex flex-1 flex-col space-y-3 h-full max-w-72"}>
           <H1 text={t("general.options")} side={'center'} />
           <Separator />
-          <Button onClick={() => navigate("/new-item")} variant={"default"} className={"p-6"}><CirclePlus />{t("item.add_item")}</Button>
+          <Button onClick={() => navigate("/new-item")} variant={"default"} className={"p-6"} disabled={!hasSection}><CirclePlus />{t("item.add_item")}</Button>
           <Button onClick={() => navigate("/new-section")} variant={"default"} className={"p-6"}><FolderPlusIcon />{t("section.add_section")}</Button>
-          <Button variant={"default"} className={"p-6"}><FilesIcon />{t("catalog.manage_catalogs")}</Button>
-          <Button variant={"default"} className={"p-6"}><FileTerminal />{t("catalog.generate_catalog")}</Button>
+          <Button variant={"default"} className={"p-6"} disabled><FilesIcon />{t("catalog.manage_catalogs")}</Button>
+          <Button variant={"default"} className={"p-6"} disabled={!hasItem}><FileTerminal />{t("catalog.generate_catalog")}</Button>
         </div>
         <Separator className={"mx-3"} orientation={"vertical"} />
         <div className={"flex flex-col flex-1 space-y-3"}>

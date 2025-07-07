@@ -11,8 +11,8 @@ import { useEffect, useState } from "react"
 import { CheckIcon, ChevronDownIcon, CircleCheckIcon, PlusCircleIcon, SquarePlus, Trash2 } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
-import { useNavigate, useParams } from "react-router"
-import { ISection } from "@/@types/interfaces/types"
+import { useNavigate, useParams, useSearchParams } from "react-router"
+import { IInfo, ISection } from "@/@types/interfaces/types"
 import { useGetItem } from "@/hooks/useItem"
 import { invoke } from "@tauri-apps/api/core"
 import { toast } from "sonner"
@@ -21,6 +21,10 @@ export default function NewItem() {
   const { t } = useTranslation();
   const navigate = useNavigate()
   const params = useParams();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const section = searchParams.get("section");
+  const item = useGetItem(id ?? "");
   const [sections, setSections] = useState<ISection[]>([])
   const [fileName, setFileName] = useState<string | null>(null);
   const [existingImage, setExistingImage] = useState<string | null>(null);
@@ -31,63 +35,152 @@ export default function NewItem() {
       section: undefined,
       code: undefined,
       description: undefined,
-      items: undefined
+      infos: undefined
     }
-  })
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "items"
   })
 
   useEffect(() => {
-    invoke<ISection[]>("list_sections").then(setSections)
-    if (params.id) {
-      const id = params.id.split("=")[1];
-      const selectedItem = useGetItem(id);
+    invoke<ISection[]>("list_sections").then(setSections);
+  }, []);
 
-      if (selectedItem) {
+  useEffect(() => {
+    if (!id || !item) return;
+    invoke<IInfo>("list_infos", { itemCode: item.code })
+      .then((fetchedInfo) => {
+        console.log(fetchedInfo)
+      })
+    async function load() {
+      let file: File | undefined;
+
+      if (item!.image_path) {
+        try {
+          const response = await fetch(item!.image_path);
+          const blob = await response.blob();
+          file = new File([blob], "imagem.png", { type: blob.type });
+        } catch (err) {
+          console.warn("Erro ao carregar imagem:", err);
+        }
+      }
+
+      try {
+        const sectionInfo = await invoke<ISection>("get_section", { id: item!.section_id });
+        const infos = await invoke<IInfo[]>("list_infos", { itemCode: item!.code });
         form.reset({
-          code: selectedItem.code,
-          section: selectedItem.section_id,
-          description: selectedItem.description,
-          items: selectedItem.infos.map(info => ({
-            id: info.id,
+          code: item!.code,
+          section: sectionInfo.name,
+          description: item!.description,
+          infos: infos.map(info => ({
+            db_id: info.id,
+            item_code: item!.code,
             name: info.name ?? "",
             details: info.details
           })),
-          image: undefined
+          image: file
         });
-
-        setExistingImage(selectedItem.image_path ?? null);
+        setExistingImage(item!.image_path ?? null);
+        setFileName(file?.name ?? null);
+      } catch (err) {
+        console.error("Erro ao carregar seção:", err);
       }
     }
-  }, []);
+    load().then();
+  }, [id, item]);
+
+  useEffect(() => {
+    if (!id && section) {
+      invoke<ISection>("get_section", { id: section }).then((e) => {
+        form.setValue("section", e.name);
+      });
+    }
+  }, [id, section]);
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "infos"
+  })
 
   const onSubmit = async (values: z.infer<ReturnType<typeof getFormSchema>>) => {
-    const section: {id: string, name: string} = await invoke("get_section_by_name", {name: values.section});
+    const section: { id: string, name: string } = await invoke("get_section_by_name", { name: values.section });
     values.image.arrayBuffer().then((buffer) => {
       const byteArray = Array.from(new Uint8Array(buffer))
       invoke<string>("save_image", {
         image: byteArray,
         code: values.code
       }).then((imagePath) => {
+        const loading_toast = toast.loading("item.creating_item")
         try {
-          const loading_toast = toast.loading("item.creating_item")
-          invoke("create_item", { code: values.code, description: values.description, sectionId: section.id, imagePath: imagePath }).then(() => {
-            toast.dismiss(loading_toast)
-            toast.success(t("item.created_successfully"))
-            navigate(-1)
-          });
+          if (id) {
+            invoke("update_item", { id: id, code: values.code, description: values.description, sectionId: section.id, imagePath: imagePath }).then(async () => {
+              toast.dismiss(loading_toast)
+              toast.success(t("item.update_successfully"))
+              navigate(-1)
+              await Promise.all(
+                values.infos?.map((info) => {
+                  const id = info.db_id;
+                  console.log(id)
+                  if (id) {
+                    return invoke("update_info", {
+                      id,
+                      itemCode: info.item_code,
+                      name: info.name,
+                      details: info.details
+                    });
+                  } else {
+                    return invoke("create_info", {
+                      id: crypto.randomUUID(),
+                      itemCode: info.item_code,
+                      name: info.name,
+                      details: info.details
+                    });
+                  }
+                }) ?? []
+              );
+
+            }).catch((e) => {
+              toast.warning(e)
+              toast.dismiss(loading_toast)
+            })
+          } else {
+            invoke("create_item", { code: values.code, description: values.description, sectionId: section.id, imagePath: imagePath }).then(() => {
+              toast.dismiss(loading_toast)
+              toast.success(t("item.created_successfully"))
+              navigate(-1)
+            }).catch(() => {
+              toast.dismiss(loading_toast)
+              toast.warning(t("item.alrealy_exists"))
+            });
+          }
         } catch {
           toast.warning(t("item.item_not_created"))
+          toast.dismiss(loading_toast)
         }
       });
     });
   }
 
+  const removeInfo = (index: number) => {
+    const infos = form.getValues().infos;
+    const db_id = infos && infos[index] ? infos[index].db_id : undefined;
+    console.log("fields: ", fields)
+    if (!db_id) {
+      remove(index);
+      toast.success("Campo removido do formulário.");
+      return;
+    }
+
+    invoke("delete_info", { id: db_id })
+      .then(() => {
+        remove(index);
+        toast.success("Campo removido com sucesso.");
+      })
+      .catch((e) => {
+        console.error(e);
+        toast.error("Erro ao remover campo.");
+      });
+  };
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full max-w-[1280px] w-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
           <FormField
@@ -188,8 +281,9 @@ export default function NewItem() {
                 <FormLabel>{t("section.sections")}</FormLabel>
                 <FormControl>
                   <Popover>
-                    <PopoverTrigger>
+                    <PopoverTrigger disabled={section != null}>
                       <Button
+                        disabled={section != null}
                         type="button"
                         role="combobox"
                         className="flex w-full justify-between  bg-white text-black capitalize border hover:text-white"
@@ -228,12 +322,11 @@ export default function NewItem() {
               </FormItem>
             )}
           />
-          <FormLabel>{t("item.optional_fields")}</FormLabel>
           {fields.map((item: any, index: number) => (
             <div key={item.id} className="space-y-4 border p-4 rounded-md">
               <FormField
                 control={form.control}
-                name={`items.${index}.name`}
+                name={`infos.${index}.name`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nome do item</FormLabel>
@@ -246,7 +339,7 @@ export default function NewItem() {
               />
               <FormField
                 control={form.control}
-                name={`items.${index}.details`}
+                name={`infos.${index}.details`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Detalhes</FormLabel>
@@ -257,20 +350,20 @@ export default function NewItem() {
                   </FormItem>
                 )}
               />
-              <Button type="button" variant="destructive" onClick={() => remove(index)}>
+              <Button type="button" variant="destructive" onClick={() => removeInfo(index)}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 {t("item.remove")}
               </Button>
             </div>
           ))}
-
           <div className="flex justify-between">
-            <Button
+            {item?.code && <Button
               type="button"
               variant="secondary"
               onClick={() =>
                 append({
-                  id: crypto.randomUUID(),         // ou use uma função geradora de ID
+                  db_id: undefined,
+                  item_code: item.code,
                   name: "",
                   details: "",
                 })
@@ -279,7 +372,11 @@ export default function NewItem() {
               <SquarePlus className="mr-2 h-4 w-4" />
               {t("item.add_form_item")}
             </Button>
-            <Button type="submit">{params.id ? <CircleCheckIcon /> : <PlusCircleIcon />}{t(params.id ? "item.update" : "item.submit")}</Button>
+            }
+            <div className="flex gap-3">
+              {id ? <Button onClick={(e) => e.preventDefault()} variant={"destructive"}><Trash2 />{t("item.delete")}</Button> : ""}
+              <Button type="submit">{params.id ? <CircleCheckIcon /> : <PlusCircleIcon />}{t(params.id ? "item.update" : "item.submit")}</Button>
+            </div>
           </div>
         </form>
       </Form>

@@ -38,6 +38,9 @@ const changeLanguage = (lng: string) => {
 };
 
 export function AppSidebar() {
+  invoke("get_settings").then((settings) => {
+    console.log("Settings:", settings);
+  });
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,7 +51,7 @@ export function AppSidebar() {
   const getUpdate = async () => {
     const e = await invoke("check_for_update"); //ToDo: remover esta linha
     if (typeof e === "string") {
-      if (e === "1.2.1") return;
+      if (e === "1.2.0") return;
       toast.custom((tr) => (
         <Card className="flex w-90 select-none">
           <CardHeader>
@@ -74,7 +77,7 @@ export function AppSidebar() {
                 });
               }}
             >
-              {t("update")}
+              {t("update.update")}
             </Button>
           </CardContent>
         </Card>
@@ -89,9 +92,12 @@ export function AppSidebar() {
     const toastId = toast.loading(t("update.checking_for_updates"));
 
     getUpdate()
-      .then(() => {
-        console.log();
-        toast.dismiss(toastId); // remove o toast de loading
+      .then((e) => {
+        console.log(e);
+        toast.dismiss(toastId);
+        if (e == false){
+          toast.success(t("update.all_up_to_date"))
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -163,26 +169,24 @@ export function AppSidebar() {
         </SidebarGroup>
         <Separator />
         <SidebarGroup>
-          <SidebarGroupLabel>
-            <Label>{t("info.version")}: v{version}</Label>
-          </SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start px-2 py-1.5 text-sm font-normal"
-                    onClick={handleVerifyUpdate}
-                  >
-                    <WrenchIcon className="mr-2 h-4 w-4" />
-                    {t("update.check_for_updates")}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">{t("update.check_for_updates")}</TooltipContent>
-              </Tooltip>
-            </SidebarMenuItem>
-          </SidebarMenu>
+          <SidebarGroupLabel>{t("info.version")}: v{version}</SidebarGroupLabel>
+          <SidebarGroupContent className={"flex w-full"}>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                  <Tooltip>
+                    <TooltipContent side={"left"}>{t("update.check_for_updates")}</TooltipContent>
+                    <TooltipTrigger className={"flex w-full"}>
+                      <SidebarMenuButton onClick={handleVerifyUpdate} asChild>
+                        <Label className={"cursor-pointer"}>
+                          <WrenchIcon />
+                          <span className={"flex min-w-25 w-full"}>{t("update.check_for_updates")}</span>
+                        </Label>
+                      </SidebarMenuButton>
+                    </TooltipTrigger>
+                  </Tooltip>
+                </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className={cn("overflow-hidden")}>
