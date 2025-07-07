@@ -117,7 +117,7 @@ pub fn update_info(id: &str, item_code: &str, name: &str, details: &str, db: Sta
 #[tauri::command]
 pub fn delete_info(id: String, db: State<DbConn>) -> Result<(), String> {
     let conn = db.0.lock().unwrap();
-    info_repository::delete_info(&conn, &id).map_err(|e: Error| e.to_string())
+    info_repository::delete_info(&conn, &id).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
