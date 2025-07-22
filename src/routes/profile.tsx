@@ -3,7 +3,6 @@ import { H1 } from "@/components/titles/h1.tsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
-import { useProfile } from "@/contexts/profileContext";
 import { LoaderCircleIcon } from "lucide-react";
 import capitalize from "@/utils/capitalize"
 import { getVersion } from "@tauri-apps/api/app";

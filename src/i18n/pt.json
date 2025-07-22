@@ -17,7 +17,8 @@
     "menu": "Menu",
     "delete_success": "Excluído com sucesso",
     "delete_errorr": "Erro ao excluir",
-    "save": "Salvar"
+    "save": "Salvar",
+    "cancel": "Cancelar"
   },
 
   "item": {
@@ -72,7 +73,8 @@
     "import_catalog": "Importar catálogo",
     "export_catalog": "Exportar catálogo",
     "delete_catalog": "Deletar catálogo",
-    "save_location": "Onde salvar"
+    "save_location": "Onde salvar",
+    "delete_catalog_description": "Você tem certeza que deseja excluir este catálogo?"
   },
 
   "validation": {

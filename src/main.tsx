@@ -7,12 +7,11 @@ import Home from "@/routes/home.tsx";
 import Profile from "@/routes/profile.tsx";
 import Layout from "@/components/sidebar/layout.tsx";
 import AddSectionPage from "@/routes/addSection.tsx";
-import {ProfileProvider} from "@/contexts/profileContext";
 import AddItemPage from "./routes/addItem";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ProfileProvider><BrowserRouter>
+    <BrowserRouter>
       <Layout>
         <Routes>
           <Route path={"/"} element={<Home/>}/>
@@ -21,6 +20,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <Route path={"/new-item/:id?/:section?"} element={<AddItemPage/>}/>
         </Routes>
       </Layout>
-    </BrowserRouter></ProfileProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 );

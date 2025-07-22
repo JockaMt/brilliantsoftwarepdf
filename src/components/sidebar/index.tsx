@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator.tsx";
 import { Label } from "@radix-ui/react-label";
 import { Avatar, AvatarImage } from "@/components/ui/avatar.tsx";
 import { cn } from "@/lib/utils.ts";
-import { itemsHelp, itemsProfile, itemsSettings } from "@/components/sidebar/data.ts";
+import { itemsHelp, itemsProfile, itemsSettings } from "@/components/sidebar/data.tsx";
 import { sidebarGroup } from "@/components/sidebar/sidebarGroup.tsx";
 import { useLocation, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button.tsx";

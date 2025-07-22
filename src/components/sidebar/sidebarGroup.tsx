@@ -7,45 +7,68 @@ import {
 } from "@/components/ui/sidebar.tsx";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip.tsx";
 import { Label } from "@radix-ui/react-label";
-import { data } from "@/components/sidebar/data.ts";
+import { Data } from "@/components/sidebar/data.ts";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogTrigger } from "../ui/dialog";
-import SidebarPopup from "../SidebarPopup";
+import { useState } from "react";
 
 interface ISidebarGroup {
-  items: data[],
-  title: string,
+  items: Data[];
+  title: string;
 }
 
 export function sidebarGroup(props: ISidebarGroup) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{t(props.title)}</SidebarGroupLabel>
       <SidebarGroupContent className={"flex w-full"}>
         <SidebarMenu>
-          {props.items.map((item) => (
-            <Dialog key={t(item.title)}>
-              <DialogTrigger asChild>
-                <SidebarMenuItem>
-                  <Tooltip>
-                    <TooltipContent side={"left"}>{t(item.title)}</TooltipContent>
-                    <TooltipTrigger className={"flex w-full"}>
-                      <SidebarMenuButton asChild>
-                      <Label className={"cursor-pointer"}>
+          {props.items.map((item) => {
+            const [open, setOpen] = useState(false);
+            const closeDialog = () => setOpen(false);
+
+            return (item.popup ? (
+              // 🔷 Item com popup (abre dialog)
+              <Dialog open={open} key={item.title} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                  <SidebarMenuItem>
+                    <Tooltip>
+                      <TooltipTrigger className="flex w-full">
+                        <SidebarMenuButton asChild>
+                          <Label className="cursor-pointer">
+                            <item.icon />
+                            <span className="flex min-w-25 w-full">{t(item.title)}</span>
+                          </Label>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="left">{t(item.title)}</TooltipContent>
+                    </Tooltip>
+                  </SidebarMenuItem>
+                </DialogTrigger>
+                {item.popup(closeDialog)}
+              </Dialog>
+            ) : (
+              // 🔶 Item com ação direta (sem popup)
+              <SidebarMenuItem key={item.title}>
+                <Tooltip>
+                  <TooltipTrigger className="flex w-full">
+                    <SidebarMenuButton asChild>
+                      <Label
+                        className="cursor-pointer"
+                        onClick={item.action}
+                      >
                         <item.icon />
-                        <span className={"flex min-w-25 w-full"}>{t(item.title)}</span>
+                        <span className="flex min-w-25 w-full">{t(item.title)}</span>
                       </Label>
                     </SidebarMenuButton>
                   </TooltipTrigger>
+                  <TooltipContent side="left">{t(item.title)}</TooltipContent>
                 </Tooltip>
               </SidebarMenuItem>
-              </DialogTrigger>
-              {item.description && item.action && (
-                <SidebarPopup title={item.title} description={item.description} action={item.action}/>
-              )}
-            </Dialog>
-          ))}
+            ))
+          }
+          )}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

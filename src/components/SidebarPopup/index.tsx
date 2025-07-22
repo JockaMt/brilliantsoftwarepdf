@@ -1,29 +1,23 @@
 import { DialogContent } from "@/components/ui/dialog.tsx";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 interface SidebarPopupProps {
   title?: string;
   description?: string;
-  action?: () => void;
+  children?: (info: string, setInfo: React.Dispatch<React.SetStateAction<string>>) => React.ReactNode;
 }
 
 const SidebarPopup = (props: SidebarPopupProps) => {
-  const { title, description, action } = props;
+  const { title, description, children } = props;
+  const [info, setInfo] = useState<string>("");
   const { t } = useTranslation();
   return (
     <DialogContent>
       <DialogTitle>{t(title!)}</DialogTitle>
       <p>{t(description!)}</p>
-      {(props.title == "edit.edit_name") && (
-        <Input
-          placeholder={t("edit.edit_name_placeholder")}
-          className="mb-4"
-        />
-      )}
-      {action && <Button onClick={action}>{t("general.save")}</Button>}
+      {children && children(info, setInfo)}
     </DialogContent>
   )
 }
