@@ -31,6 +31,7 @@ pub fn get_section(conn: &Connection, id: &str) -> Result<Option<Section>> {
         Ok(Some(Section {
             id: row.get(0)?,
             name: row.get(1)?,
+            items: Vec::new(), // Itens podem ser carregados separadamente se necessário
         }))
     } else {
         Ok(None)
@@ -46,6 +47,7 @@ pub fn get_section_by_name(conn: &Connection, name: &str) -> Result<Option<Secti
         Ok(Some(Section {
             id: row.get(0)?,
             name: row.get(1)?,
+            items: Vec::new(), // Itens podem ser carregados separadamente se necessário
         }))
     } else {
         Ok(None)
@@ -71,6 +73,7 @@ pub fn list_sections(conn: &Connection) -> Result<Vec<Section>> {
         Ok(Section {
             id: row.get(0)?,
             name: row.get(1)?,
+            items: Vec::new(), // Itens podem ser carregados separadamente se necessário
         })
     })?;
 

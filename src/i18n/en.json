@@ -58,5 +58,15 @@
   "report_bug": "Report bug",
   "pt": "Portuguese",
   "en": "English",
-  "es": "Spanish"
+  "es": "Spanish",
+  "created_successfully": "Item created successfully!",
+  "update_successfully": "Item updated successfully!",
+  "deleted_successfully": "Item deleted successfully!",
+  "deleting_item": "Deleting item...",
+  "creating_item": "Creating item...",
+  "no_item_to_delete": "No item to delete",
+  "confirm_delete": "Are you sure you want to delete this item? This action cannot be undone.",
+  "confirm_delete_title": "Confirm deletion",
+  "delete_error": "Error deleting item",
+  "item_not_created": "Error creating item"
 }

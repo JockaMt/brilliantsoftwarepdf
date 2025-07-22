@@ -8,7 +8,7 @@ pub fn create_table(conn: &Connection) -> Result<()> {
             item_code TEXT NOT NULL,
             name TEXT NOT NULL,
             details TEXT NOT NULL,
-            FOREIGN KEY (item_code) REFERENCES items(code) ON DELETE CASCADE
+            FOREIGN KEY (item_code) REFERENCES items(id) ON DELETE CASCADE
         )",
         [],
     )?;

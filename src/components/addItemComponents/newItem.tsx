@@ -16,6 +16,7 @@ import { IInfo, ISection } from "@/@types/interfaces/types"
 import { useGetItem } from "@/hooks/useItem"
 import { invoke } from "@tauri-apps/api/core"
 import { toast } from "sonner"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 export default function NewItem() {
   const { t } = useTranslation();
@@ -28,6 +29,7 @@ export default function NewItem() {
   const [sections, setSections] = useState<ISection[]>([])
   const [fileName, setFileName] = useState<string | null>(null);
   const [existingImage, setExistingImage] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const form = useForm<z.infer<ReturnType<typeof getFormSchema>>>({
     resolver: zodResolver(getFormSchema(t)),
     defaultValues: {
@@ -54,9 +56,10 @@ export default function NewItem() {
 
       if (item!.image_path) {
         try {
-          const response = await fetch(item!.image_path);
-          const blob = await response.blob();
-          file = new File([blob], "imagem.png", { type: blob.type });
+          // Usar o comando Tauri para ler a imagem do sistema de arquivos local
+          const imageBytes = await invoke<number[]>("read_image", { imagePath: item!.image_path });
+          const blob = new Blob([new Uint8Array(imageBytes)], { type: "image/png" });
+          file = new File([blob], "imagem.png", { type: "image/png" });
         } catch (err) {
           console.warn("Erro ao carregar imagem:", err);
         }
@@ -77,7 +80,14 @@ export default function NewItem() {
           })),
           image: file
         });
-        setExistingImage(item!.image_path ?? null);
+        
+        // Se conseguiu carregar a imagem, criar uma URL de blob para preview
+        if (file) {
+          const imageUrl = URL.createObjectURL(file);
+          setExistingImage(imageUrl);
+        } else {
+          setExistingImage(null);
+        }
         setFileName(file?.name ?? null);
       } catch (err) {
         console.error("Erro ao carregar seção:", err);
@@ -176,6 +186,28 @@ export default function NewItem() {
       .catch((e) => {
         console.error(e);
         toast.error("Erro ao remover campo.");
+      });
+  };
+
+  const deleteItem = () => {
+    if (!id) {
+      toast.error(t("item.no_item_to_delete"));
+      return;
+    }
+
+    const loading_toast = toast.loading(t("item.deleting_item"));
+    
+    invoke("delete_item", { id })
+      .then(() => {
+        toast.dismiss(loading_toast);
+        toast.success(t("item.deleted_successfully"));
+        setShowDeleteDialog(false);
+        navigate(-1);
+      })
+      .catch((e) => {
+        toast.dismiss(loading_toast);
+        console.error("Erro ao deletar item:", e);
+        toast.error(t("item.delete_error"));
       });
   };
 
@@ -374,7 +406,33 @@ export default function NewItem() {
             </Button>
             }
             <div className="flex gap-3">
-              {id ? <Button onClick={(e) => e.preventDefault()} variant={"destructive"}><Trash2 />{t("item.delete")}</Button> : ""}
+              {id ? (
+                <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                  <DialogTrigger asChild>
+                    <Button variant={"destructive"}>
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t("item.delete")}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>{t("item.confirm_delete_title")}</DialogTitle>
+                      <DialogDescription>
+                        {t("item.confirm_delete")}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                        {t("general.cancel")}
+                      </Button>
+                      <Button variant="destructive" onClick={deleteItem}>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {t("item.delete")}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              ) : ""}
               <Button type="submit">{params.id ? <CircleCheckIcon /> : <PlusCircleIcon />}{t(params.id ? "item.update" : "item.submit")}</Button>
             </div>
           </div>

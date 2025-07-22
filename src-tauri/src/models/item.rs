@@ -6,5 +6,5 @@ pub struct Item {
     pub code: String,
     pub description: String,
     pub section_id: String,
-    pub image_path: Option<String>, // ex: "./images/123.jpg"
+    pub image_path: String, // ex: "./images/123.jpg"
 }

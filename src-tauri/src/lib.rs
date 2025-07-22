@@ -41,7 +41,18 @@ pub async fn run() {
             update_info,
             delete_info,
             save_image,
-            get_settings
+            read_image,
+            get_settings,
+            save_settings_command,
+            save_palette,
+            save_user_image,
+            get_user_image,
+            migrate_settings_database,
+            open_external_url,
+            backup_user_settings,
+            migrate_settings_to_db,
+            cleanup_orphaned_images,
+            create_database_backup
         ])
 		.run(tauri::generate_context!())
 		.unwrap();

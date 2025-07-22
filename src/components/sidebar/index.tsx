@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator.tsx";
 import { Label } from "@radix-ui/react-label";
-import { Avatar, AvatarImage } from "@/components/ui/avatar.tsx";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar.tsx";
 import { cn } from "@/lib/utils.ts";
 import { itemsHelp, itemsProfile, itemsSettings } from "@/components/sidebar/data.tsx";
 import { sidebarGroup } from "@/components/sidebar/sidebarGroup.tsx";
@@ -22,12 +22,14 @@ import { Button } from "@/components/ui/button.tsx";
 import { useMediaQuery } from "usehooks-ts";
 import { useEffect, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
-import { SidebarOpenIcon, SparklesIcon, WrenchIcon } from "lucide-react";
+import { SidebarOpenIcon, SparklesIcon, WrenchIcon, User } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip.tsx";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Toaster } from "@/components/ui/sonner.tsx";
+import { UserSettings } from "../../@types/interfaces/settings";
+import { useImageUpload } from "@/hooks/useImageUpload";
 
 import i18n from "@/i18n";
 import { useTranslation } from "react-i18next";
@@ -38,15 +40,33 @@ const changeLanguage = (lng: string) => {
 };
 
 export function AppSidebar() {
-  invoke("get_settings").then((settings) => {
-    console.log("Settings:", settings);
-  });
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const isLargeScreen = useMediaQuery("(min-width: 768px)");
   const side = isLargeScreen ? "left" : "right";
   const [version, setVersion] = useState<string>("");
+  const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
+  const { loadUserImage } = useImageUpload();
+  const [userImageUrl, setUserImageUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Carregar settings e imagem do usuário
+    const loadUserData = async () => {
+      try {
+        const settings = await invoke<UserSettings>("get_settings");
+        setUserSettings(settings);
+        
+        // Carregar imagem do usuário
+        const imageUrl = await loadUserImage();
+        setUserImageUrl(imageUrl);
+      } catch (error) {
+        console.error("Erro ao carregar dados do usuário:", error);
+      }
+    };
+    
+    loadUserData();
+  }, []); // Remover dependência loadUserImage
 
   const getUpdate = async () => {
     const e = await invoke("check_for_update"); //ToDo: remover esta linha
@@ -209,7 +229,10 @@ export function AppSidebar() {
                       "h-10 w-10"
                     )}
                   >
-                    <AvatarImage src="https://github.com/jockamt.png" />
+                    <AvatarImage src={userImageUrl || userSettings?.image_path || undefined} />
+                    <AvatarFallback className="bg-muted">
+                      <User className="h-5 w-5" />
+                    </AvatarFallback>
                   </Avatar>
                   <span className="flex duration-300 flex-1 w-10 [[data-side=left][data-state=collapsed]_&]:w-0 [[data-side=left][data-state=collapsed]_&]:opacity-0">
                     {t("general.profile")}

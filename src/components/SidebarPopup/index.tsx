@@ -14,10 +14,12 @@ const SidebarPopup = (props: SidebarPopupProps) => {
   const [info, setInfo] = useState<string>("");
   const { t } = useTranslation();
   return (
-    <DialogContent>
-      <DialogTitle>{t(title!)}</DialogTitle>
-      <p>{t(description!)}</p>
-      {children && children(info, setInfo)}
+    <DialogContent className="jewelry-palette-dialog overflow-y-auto p-6">
+      <DialogTitle className="text-xl font-semibold mb-4">{t(title!)}</DialogTitle>
+      <p className="text-sm text-muted-foreground mb-6">{t(description!)}</p>
+      <div className="space-y-4">
+        {children && children(info, setInfo)}
+      </div>
     </DialogContent>
   )
 }

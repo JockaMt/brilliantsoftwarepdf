@@ -56,5 +56,15 @@
   "report_bug": "Reportar error",
   "pt": "Portugués",
   "en": "Inglés",
-  "es": "Español"
+  "es": "Español",
+  "created_successfully": "¡Ítem creado con éxito!",
+  "update_successfully": "¡Ítem actualizado con éxito!",
+  "deleted_successfully": "¡Ítem eliminado con éxito!",
+  "deleting_item": "Eliminando ítem...",
+  "creating_item": "Creando ítem...",
+  "no_item_to_delete": "No hay ítem para eliminar",
+  "confirm_delete": "¿Estás seguro de que quieres eliminar este ítem? Esta acción no se puede deshacer.",
+  "confirm_delete_title": "Confirmar eliminación",
+  "delete_error": "Error al eliminar ítem",
+  "item_not_created": "Error al crear ítem"
 }

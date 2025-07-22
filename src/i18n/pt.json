@@ -16,9 +16,14 @@
     "loading": "Carregando",
     "menu": "Menu",
     "delete_success": "Excluído com sucesso",
-    "delete_errorr": "Erro ao excluir",
+    "delete_error": "Erro ao excluir",
     "save": "Salvar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "not_informed": "Não informado",
+    "system_default": "Padrão do sistema",
+    "last_update": "Última atualização",
+    "created_at": "Criado em",
+    "user_id": "ID do usuário"
   },
 
   "item": {
@@ -47,6 +52,16 @@
     "select_section": "Selecionar seção",
     "item_description_placeholder": "Ex: Anel de ouro 16kr",
     "alrealy_exists": "Já existe um item com este código.",
+    "created_successfully": "Item criado com sucesso!",
+    "update_successfully": "Item atualizado com sucesso!",
+    "deleted_successfully": "Item deletado com sucesso!",
+    "deleting_item": "Deletando item...",
+    "creating_item": "Criando item...",
+    "no_item_to_delete": "Nenhum item para deletar",
+    "confirm_delete": "Tem certeza que deseja deletar este item? Esta ação não pode ser desfeita.",
+    "confirm_delete_title": "Confirmar exclusão",
+    "delete_error": "Erro ao deletar item",
+    "item_not_created": "Erro ao criar item",
     "ex_item_name": "Ex.: Peso em ouro",
     "ex_item_details": "Ex.: 15g"
   },
@@ -95,7 +110,23 @@
     "edit_palette": "Editar paleta",
     "edit_phone": "Editar número",
     "edit_name_description": "Altere o nome do seu catálogo",
-    "edit_name_placeholder": "Nome do catálogo"
+    "edit_name_placeholder": "Nome do catálogo",
+    "edit_image_description": "Altere a imagem do seu catálogo",
+    "edit_palette_description": "Escolha uma paleta de cores para seu catálogo",
+    "edit_phone_description": "Altere o número de telefone do seu catálogo",
+    "select_palette": "Selecionar paleta",
+    "palette_classic": "Ouro Clássico",
+    "palette_modern": "Prata Moderna",
+    "palette_luxury": "Luxo Premium",
+    "palette_rose_gold": "Ouro Rosé",
+    "palette_white_gold": "Ouro Branco",
+    "palette_diamond": "Diamante",
+    "palette_emerald": "Esmeralda",
+    "palette_ruby": "Rubi",
+    "palette_sapphire": "Safira",
+    "palette_vintage": "Vintage",
+    "palette_saved": "Paleta salva com sucesso!",
+    "palette_save_error": "Erro ao salvar paleta"
   },
 
   "settings": {
@@ -137,6 +168,7 @@
   },
 
   "feedback": {
-    "report_bug": "Reportar erro"
+    "report_bug": "Reportar erro",
+    "report_bug_description": "Se você encontrou um erro ou tem uma sugestão, por favor, nos avise."
   }
 }
