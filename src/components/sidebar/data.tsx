@@ -14,11 +14,11 @@ import SidebarPopup from "../SidebarPopup";
 import PopupInput from "../SidebarPopup/Input";
 import { Button } from "../ui/button";
 import { t } from "i18next";
-import { Input } from "../ui/input";
 import { PaletteSelector, ColorPalette } from "../SidebarPopup/PaletteSelector";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
 import { UserSettings } from "../../@types/interfaces/settings";
+import { ImageUploader } from "../ImageUploader";
 
 // Função helper para recarregar a página atual
 const reloadCurrentPage = () => {
@@ -107,19 +107,51 @@ export const itemsProfile: Data[] = [
         title="edit.edit_image"
         description="edit.edit_image_description"
       >
-        {(_info, _setInfo) => (
-          <>
-            <Input type="file" id="file-input" accept="image/*" onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                console.log(e.target.files[0]);
-              }
-            }} />
-            <Button onClick={() => {
-              console.log("Imagem salva!")
-              close();
-            }}>{t("general.save")}</Button>
-          </>
-        )}
+        {(_info, _setInfo) => {
+          const [currentImageUrl, setCurrentImageUrl] = useState<string>('');
+          
+          // Carregar imagem atual
+          useEffect(() => {
+            invoke<UserSettings>("get_settings")
+              .then(async (_settings) => {
+                // Tentar carregar a imagem do banco
+                try {
+                  const imageData: number[] | null = await invoke('get_user_image');
+                  if (imageData && imageData.length > 0) {
+                    const uint8Array = new Uint8Array(imageData);
+                    const blob = new Blob([uint8Array], { type: 'image/jpeg' });
+                    const url = URL.createObjectURL(blob);
+                    setCurrentImageUrl(url);
+                  }
+                } catch (error) {
+                  console.error('Erro ao carregar imagem:', error);
+                }
+              })
+              .catch(console.error);
+          }, []);
+          
+          const handleImageUploaded = async (imageUrl: string) => {
+            setCurrentImageUrl(imageUrl);
+            toast.success("Imagem salva com sucesso!");
+            close();
+            reloadCurrentPage();
+          };
+          
+          return (
+            <div className="flex flex-col items-center space-y-4">
+              <ImageUploader
+                currentImageUrl={currentImageUrl}
+                onImageUploaded={handleImageUploaded}
+                size="lg"
+              />
+              <div className="flex justify-end space-x-3 pt-4 w-full">
+                <Button variant="outline" onClick={close}>
+                  {t("general.cancel")}
+                </Button>
+              </div>
+            </div>
+          );
+        }}
       </SidebarPopup>
     )
   }, {

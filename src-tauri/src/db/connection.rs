@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 use dirs_next::data_dir;
-use rusqlite::{Connection, Result as SqlResult};
+use rusqlite::{Connection};
 use crate::db::{info_repository, item_repository, section_repository};
 
 pub fn database_connect() -> Connection {
