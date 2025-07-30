@@ -89,7 +89,12 @@
     "export_catalog": "Exportar catálogo",
     "delete_catalog": "Deletar catálogo",
     "save_location": "Onde salvar",
-    "delete_catalog_description": "Você tem certeza que deseja excluir este catálogo?"
+    "delete_catalog_description": "Você tem certeza que deseja excluir este catálogo?",
+    "generating": "Gerando...",
+    "generating_pdf": "Gerando PDF...",
+    "pdf_generated_success": "PDF gerado com sucesso!",
+    "pdf_generation_error": "Erro ao gerar PDF",
+    "no_items_error": "Nenhum item encontrado para gerar o catálogo"
   },
 
   "validation": {

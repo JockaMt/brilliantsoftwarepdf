@@ -52,7 +52,10 @@ pub async fn run() {
             backup_user_settings,
             migrate_settings_to_db,
             cleanup_orphaned_images,
-            create_database_backup
+            create_database_backup,
+            select_save_folder,
+            update_save_path,
+            generate_catalog_pdf_python
         ])
 		.run(tauri::generate_context!())
 		.unwrap();

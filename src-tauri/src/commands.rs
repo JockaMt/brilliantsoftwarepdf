@@ -482,3 +482,237 @@ fn cleanup_old_backups(backup_dir: &std::path::Path, max_backups: usize) -> Resu
     
     Ok(())
 }
+
+#[tauri::command]
+pub fn select_save_folder() -> Result<Option<String>, String> {
+    use std::process::Command;
+    
+    // Usar PowerShell para selecionar pasta no Windows
+    let output = Command::new("powershell")
+        .args(&[
+            "-Command",
+            r#"
+            Add-Type -AssemblyName System.Windows.Forms;
+            $folder = New-Object System.Windows.Forms.FolderBrowserDialog;
+            $folder.Description = 'Selecione onde salvar o catálogo PDF';
+            $folder.ShowNewFolderButton = $true;
+            if ($folder.ShowDialog() -eq 'OK') {
+                Write-Output $folder.SelectedPath
+            }
+            "#
+        ])
+        .output()
+        .map_err(|e| format!("Erro ao executar PowerShell: {}", e))?;
+
+    if output.status.success() {
+        let folder_path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        if folder_path.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(folder_path))
+        }
+    } else {
+        let error = String::from_utf8_lossy(&output.stderr);
+        Err(format!("Erro na seleção de pasta: {}", error))
+    }
+}
+
+#[tauri::command]
+pub fn update_save_path(new_path: String, _db: State<DbConn>) -> Result<(), String> {
+    let mut settings = settings_db::get_user_settings()?;
+    settings.save_path = new_path;
+    settings_db::save_user_settings(&settings)
+}
+
+#[tauri::command]
+pub fn generate_catalog_pdf_python(db: State<DbConn>) -> Result<String, String> {
+    use std::process::Command;
+    use serde_json::json;
+    use std::env;
+    
+    // Obter configurações do usuário
+    let settings = settings_db::get_user_settings()?;
+    let save_path = if settings.save_path.is_empty() {
+        dirs_next::document_dir()
+            .unwrap_or_else(|| std::path::PathBuf::from("."))
+            .to_string_lossy()
+            .to_string()
+    } else {
+        settings.save_path.clone()
+    };
+    
+    // Obter dados do banco
+    let conn = db.0.lock().unwrap();
+    
+    // Buscar todas as seções
+    let sections = section_repository::list_sections(&conn)
+        .map_err(|e| format!("Erro ao buscar seções: {}", e))?;
+    
+    // Buscar todos os itens e infos
+    let mut all_items = Vec::new();
+    let mut all_infos = Vec::new();
+    
+    for section in &sections {
+        let items = item_repository::list_items(&conn, &section.id)
+            .map_err(|e| format!("Erro ao buscar itens da seção {}: {}", section.name, e))?;
+        
+        println!("DEBUG: Seção '{}' tem {} itens", section.name, items.len());
+        
+        for item in items {
+            let infos = info_repository::list_infos(&conn, &item.code)
+                .map_err(|e| format!("Erro ao buscar infos do item {}: {}", item.code, e))?;
+            
+            println!("DEBUG: Item '{}' (código: {}) tem {} infos", item.description, item.code, infos.len());
+            for info in &infos {
+                println!("DEBUG: Info - nome: '{}', detalhes: '{}'", info.name, info.details);
+            }
+            
+            // Converter imagem para base64 se existir
+            let image_base64 = if !item.image_path.is_empty() && std::path::Path::new(&item.image_path).exists() {
+                match fs::read(&item.image_path) {
+                    Ok(image_data) => {
+                        use base64::{Engine as _, engine::general_purpose};
+                        let base64_str = general_purpose::STANDARD.encode(&image_data);
+                        Some(base64_str)
+                    },
+                    Err(_) => None
+                }
+            } else {
+                None
+            };
+            
+            all_items.push(json!({
+                "id": item.id,
+                "code": item.code,
+                "description": item.description,
+                "section_id": section.id,
+                "image_path": item.image_path,
+                "image_base64": image_base64
+            }));
+            
+            // Adicionar infos à lista geral
+            for info in infos {
+                all_infos.push(json!({
+                    "id": info.id,
+                    "name": info.name,
+                    "details": info.details,
+                    "item_code": item.code
+                }));
+            }
+        }
+    }
+    
+    // Criar lista de seções
+    let sections_data: Vec<_> = sections.iter().map(|section| json!({
+        "id": section.id,
+        "name": section.name
+    })).collect();
+    
+    // Converter imagem do usuário para base64 se existir
+    let user_image_base64 = if let Some(image_data) = settings.image_blob {
+        println!("DEBUG: Imagem do usuário encontrada, {} bytes", image_data.len());
+        use base64::{Engine as _, engine::general_purpose};
+        let base64_str = general_purpose::STANDARD.encode(&image_data);
+        let result = format!("data:image/png;base64,{}", base64_str);
+        println!("DEBUG: Imagem convertida para base64, comprimento: {}", result.len());
+        Some(result)
+    } else {
+        println!("DEBUG: Nenhuma imagem do usuário encontrada nos settings");
+        None
+    };
+    
+    // Criar dados JSON para o Python
+    let python_data = json!({
+        "user_settings": {
+            "name": settings.name,
+            "save_path": save_path,
+            "instagram_username": settings.instagram_username,
+            "website_url": settings.website_url,
+            "youtube_channel": settings.youtube_channel,
+            "phone_number": settings.phone_number,
+            "email": settings.email,
+            "pallet": settings.pallet,
+            "image_base64": user_image_base64
+        },
+        "sections": sections_data,
+        "items": all_items,
+        "infos": all_infos
+    });
+    
+    // Obter o diretório do executável
+    let exe_dir = env::current_exe()
+        .map_err(|e| format!("Erro ao obter diretório do executável: {}", e))?
+        .parent()
+        .ok_or("Erro ao obter diretório pai")?
+        .to_path_buf();
+    
+    // Verificar se existe versão compilada do gerador PDF
+    let scripts_dir = exe_dir.join("scripts");
+    let compiled_generator = if cfg!(target_os = "windows") {
+        scripts_dir.join("pdf_generator.exe")
+    } else {
+        scripts_dir.join("pdf_generator")
+    };
+    
+    let python_script = scripts_dir.join("pdf_generator.py");
+    
+    // Criar arquivo temporário com os dados
+    let temp_dir = env::temp_dir();
+    let temp_file = temp_dir.join("catalog_data.json");
+    
+    fs::write(&temp_file, python_data.to_string())
+        .map_err(|e| format!("Erro ao criar arquivo temporário: {}", e))?;
+    
+    // Criar caminho de saída do PDF
+    let timestamp = chrono::Utc::now().format("%Y%m%d_%H%M%S");
+    let pdf_filename = format!("catalogo_{}.pdf", timestamp);
+    let output_path = std::path::Path::new(&save_path).join(&pdf_filename);
+    
+    // Decidir qual executor usar
+    println!("DEBUG: Verificando executores...");
+    let output = if compiled_generator.exists() {
+        println!("DEBUG: Usando gerador compilado: {:?}", compiled_generator);
+        // Usar versão compilada (sem dependência de Python)
+        Command::new(&compiled_generator)
+            .arg(temp_file.to_string_lossy().as_ref())
+            .arg(output_path.to_string_lossy().as_ref())
+            .output()
+            .map_err(|e| format!("Erro ao executar gerador compilado: {}", e))?
+    } else if python_script.exists() {
+        println!("DEBUG: Usando script Python: {:?}", python_script);
+        // Fallback para script Python
+        let cmd_output = Command::new("python")
+            .args(&[
+                python_script.to_string_lossy().as_ref(),
+                temp_file.to_string_lossy().as_ref(),
+                output_path.to_string_lossy().as_ref()
+            ])
+            .output()
+            .map_err(|e| format!("Erro ao executar Python: {}. Certifique-se de que Python está instalado e acessível.", e))?;
+        
+        println!("DEBUG: Saída Python stdout: {}", String::from_utf8_lossy(&cmd_output.stdout));
+        println!("DEBUG: Saída Python stderr: {}", String::from_utf8_lossy(&cmd_output.stderr));
+        
+        cmd_output
+    } else {
+        println!("DEBUG: Nenhum gerador encontrado!");
+        // Nenhum gerador encontrado
+        let _ = fs::remove_file(&temp_file);
+        return Err("Gerador PDF não encontrado. Certifique-se de que pdf_generator.exe ou pdf_generator.py está na pasta scripts/".to_string());
+    };
+    
+    // Limpar arquivo temporário
+    let _ = fs::remove_file(&temp_file);
+    
+    if output.status.success() {
+        let result = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        if result.is_empty() {
+            Ok(format!("PDF gerado com sucesso! Salvo em: {}", output_path.display()))
+        } else {
+            Ok(result)
+        }
+    } else {
+        let error = String::from_utf8_lossy(&output.stderr);
+        Err(format!("Erro na geração do PDF: {}", error))
+    }
+}

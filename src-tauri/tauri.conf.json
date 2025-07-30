@@ -32,6 +32,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "resources": [
+      "scripts/pdf_generator.exe",
+      "scripts/pdf_generator.py"
+    ],
     "createUpdaterArtifacts": true
   },
   "plugins": {
