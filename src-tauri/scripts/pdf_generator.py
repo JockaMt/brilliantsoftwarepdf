@@ -6,7 +6,7 @@ import json
 import os
 import sys
 from datetime import datetime
-from reportlab.lib.colors import Color as rlColor
+from reportlab.lib.colors import Color as rlColor, Color
 from reportlab.lib.utils import ImageReader
 from reportlab.graphics.shapes import Rect, Drawing, Polygon
 from reportlab.pdfgen import canvas
@@ -164,72 +164,177 @@ class MakePdf:
         self.canvas = canvas.Canvas(filename, initialFontSize=13)
         self.page_number = 0
         
-        # Paletas de cores sincronizadas com o frontend
-        self.pallet_1 = [rlColor(0.941, 0.988, 0.973), rlColor(0.788, 0.663, 0.380)]  # Classic - background + primary
-        self.pallet_2 = [rlColor(0.980, 0.980, 0.980), rlColor(0.753, 0.753, 0.753)]  # Modern - background + primary  
-        self.pallet_3 = [rlColor(0.980, 0.941, 0.902), rlColor(0.447, 0.184, 0.216)]  # Luxury - background + primary
-        self.pallet_4 = [rlColor(1.0, 0.973, 0.941), rlColor(0.804, 0.498, 0.196)]  # Rose Gold - background + primary
-        self.pallet_5 = [rlColor(0.980, 0.980, 0.980), rlColor(0.863, 0.863, 0.863)]  # White Gold - background + primary
-        self.pallet_6 = [rlColor(0.973, 0.980, 1.0), rlColor(0.255, 0.412, 0.882)]  # Diamond - background + primary
-        self.pallet_7 = [rlColor(0.961, 1.0, 0.980), rlColor(0.314, 0.784, 0.471)]  # Emerald - background + primary
-        self.pallet_8 = [rlColor(1.0, 0.941, 0.961), rlColor(0.878, 0.067, 0.373)]  # Ruby - background + primary
-        self.pallet_9 = [rlColor(0.941, 0.973, 1.0), rlColor(0.059, 0.322, 0.729)]  # Sapphire - background + primary
-        self.pallet_10 = [rlColor(0.992, 0.961, 0.902), rlColor(0.824, 0.412, 0.118)]  # Vintage - background + primary
+        # Paletas de cores sincronizadas com o frontend (cores hexadecimais exatas)
+        self.pallet_1 = [self.hex_to_rgb("#FEFDF8"), self.hex_to_rgb("#C9A961")]  # Classic - Ouro Clássico
+        self.pallet_2 = [self.hex_to_rgb("#FAFAFA"), self.hex_to_rgb("#C0C0C0")]  # Modern - Prata Moderna  
+        self.pallet_3 = [self.hex_to_rgb("#FAF0E6"), self.hex_to_rgb("#722F37")]  # Luxury - Luxo Premium
+        self.pallet_4 = [self.hex_to_rgb("#FFF8F0"), self.hex_to_rgb("#CD7F32")]  # Rose Gold - Ouro Rosé
+        self.pallet_5 = [self.hex_to_rgb("#FAFAFA"), self.hex_to_rgb("#DCDCDC")]  # White Gold - Ouro Branco
+        self.pallet_6 = [self.hex_to_rgb("#F8FAFF"), self.hex_to_rgb("#4169E1")]  # Diamond - Diamante
+        self.pallet_7 = [self.hex_to_rgb("#F5FFFA"), self.hex_to_rgb("#50C878")]  # Emerald - Esmeralda
+        self.pallet_8 = [self.hex_to_rgb("#FFF0F5"), self.hex_to_rgb("#E0115F")]  # Ruby - Rubi
+        self.pallet_9 = [self.hex_to_rgb("#F0F8FF"), self.hex_to_rgb("#0F52BA")]  # Sapphire - Safira
+        self.pallet_10 = [self.hex_to_rgb("#FDF5E6"), self.hex_to_rgb("#D2691E")]  # Vintage - Vintage
         
         self.pallets = [self.pallet_1, self.pallet_2, self.pallet_3, self.pallet_4, self.pallet_5, 
                        self.pallet_6, self.pallet_7, self.pallet_8, self.pallet_9, self.pallet_10]
         self.pallet_select = int(database.get_pallet())
 
+    def hex_to_rgb(self, hex_color):
+        """Converte cor hexadecimal para rlColor RGB"""
+        hex_color = hex_color.lstrip('#')
+        r = int(hex_color[0:2], 16) / 255.0
+        g = int(hex_color[2:4], 16) / 255.0  
+        b = int(hex_color[4:6], 16) / 255.0
+        return rlColor(r, g, b)
+
     def draw_lines(self, title: str):
-        self.canvas.setFont("Helvetica-Bold", 17)
-        self.canvas.line(40, 80, 40, 700)
-        self.canvas.line(40, 700, 200, 700)
-        self.canvas.drawCentredString(self.width/2, 695, title.capitalize())
-        self.canvas.line(400, 700, 545, 700)
+        # Sombra do fundo do título
+        self.canvas.setFillColorRGB(0.8, 0.8, 0.8)
+        self.canvas.rect(43, 677, self.width-80, 30, fill=1, stroke=0)
+        
+        # Fundo do título com gradiente simulado
+        self.canvas.setFillColor(self.pallets[self.pallet_select][0])
+        self.canvas.rect(40, 680, self.width-80, 30, fill=1, stroke=0)
+        
+        # Bordas ornamentadas
+        self.canvas.setStrokeColor(self.pallets[self.pallet_select][1])
+        self.canvas.setLineWidth(4)
+        self.canvas.line(40, 710, self.width-40, 710)
+        self.canvas.setLineWidth(2)
+        self.canvas.line(40, 680, self.width-40, 680)
+        
+        # Título centralizado
+        self.canvas.setFont("Helvetica-Bold", 18)
+        # Sombra do título
+        self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+        self.canvas.drawCentredString(self.width/2 + 1, 689, title.capitalize())
+        # Texto principal
+        self.canvas.setFillColor(self.pallets[self.pallet_select][1])
+        self.canvas.drawCentredString(self.width/2, 690, title.capitalize())
+        
+        # Bordas laterais ornamentadas
+        self.canvas.setStrokeColor(self.pallets[self.pallet_select][1])
+        self.canvas.setLineWidth(3)
+        self.canvas.line(40, 80, 40, 710)
+        self.canvas.line(self.width-40, 80, self.width-40, 710)
+        
+        # Linhas decorativas internas
+        self.canvas.setLineWidth(1)
+        self.canvas.line(45, 85, 45, 705)
+        self.canvas.line(self.width-45, 85, self.width-45, 705)
+        
+        self.canvas.setFillColorRGB(0,0,0)  # Reset cor texto padrão
 
     def draw_header(self):
+        # Sombra do fundo superior
+        self.canvas.setFillColorRGB(0.9, 0.9, 0.9)
+        rect_shadow = Rect(3, 3, self.width, 100)
+        rect_shadow.fillColor = rlColor(0.9, 0.9, 0.9)
+        rect_shadow.strokeWidth = 0
+        d_shadow = Drawing(0, 0)
+        d_shadow.add(rect_shadow)
+        d_shadow.drawOn(self.canvas, 0, self.height - 103)
+
+        # Fundo superior principal
         rect = Rect(0, 0, self.width, 100)
         rect.fillColor = self.pallets[self.pallet_select][0]
         rect.strokeWidth = 0
         rect.strokeOpacity = 0
-        rect2 = Rect(0, 0, self.width, 35)
-        rect2.fillColor = self.pallets[self.pallet_select][0]
-        rect2.strokeOpacity = 0
         d = Drawing(0, 0)
         d.add(rect)
         d.drawOn(self.canvas, rect.x, self.height - rect.height)
+
+        # Faixa inferior decorativa do header
+        rect2 = Rect(0, 0, self.width, 35)
+        rect2.fillColor = self.pallets[self.pallet_select][1]
+        rect2.strokeOpacity = 0
         d2 = Drawing(0, 0)
         d2.add(rect2)
-        d2.drawOn(self.canvas, 0, 0)
-        
+        d2.drawOn(self.canvas, 0, self.height - 35)
+
+        # Polígono decorativo lateral esquerdo
         dark_rect = Polygon(
             points=[0, 0, 90, 0, 190, rect.height, 0, 100]
         )
         dark_rect.fillColor = self.pallets[self.pallet_select][1]
         dark_rect.strokeWidth = 0
         dark_rect.strokeOpacity = 0
-        d2 = Drawing(0, 0)
-        d2.add(dark_rect)
-        d2.drawOn(self.canvas, 0, self.height - rect.height)
-        
-        self.canvas.setFont("Helvetica", 9)
+        d3 = Drawing(0, 0)
+        d3.add(dark_rect)
+        d3.drawOn(self.canvas, 0, self.height - rect.height)
+
+        # Polígono decorativo lateral direito (novo)
+        dark_rect_right = Polygon(
+            points=[self.width-190, 0, self.width-90, 0, self.width, rect.height, self.width-100, 100]
+        )
+        dark_rect_right.fillColor = self.pallets[self.pallet_select][1]
+        dark_rect_right.strokeWidth = 0
+        dark_rect_right.strokeOpacity = 0
+        d4 = Drawing(0, 0)
+        d4.add(dark_rect_right)
+        d4.drawOn(self.canvas, 0, self.height - rect.height)
+
+        # Detalhes ornamentais
+        self.canvas.setStrokeColor(self.pallets[self.pallet_select][1])
+        self.canvas.setLineWidth(2)
+        self.canvas.line(0, self.height-35, self.width, self.height-35)
+
+        # Nome da empresa
+        self.canvas.setFont("Helvetica-Bold", 12)
+        # Sombra
+        self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+        self.canvas.drawRightString(self.width-39, self.height-46, f"{self.database.get_name()}")
+        # Texto principal
+        self.canvas.setFillColorRGB(1, 1, 1)  # Cor branca
         self.canvas.drawRightString(self.width-40, self.height-45, f"{self.database.get_name()}")
-        
-        # Formatar telefone
+
+        # Formatar telefone com estilo
         phone = self.database.get_phone()
         if phone:
             cleaned = re.sub(r'\D', '', phone)
             if len(cleaned) >= 10:
                 formatted_phone = re.sub(r'^(\d{2})(\d{4,5})(\d{4})$', r'(\1) \2-\3', cleaned)
+                self.canvas.setFont("Helvetica", 10)
+                # Sombra do telefone
+                self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+                self.canvas.drawRightString(self.width-39, self.height-61, f"Contato: {formatted_phone}")
+                # Texto principal
+                self.canvas.setFillColorRGB(1, 1, 1)  # Cor branca
                 self.canvas.drawRightString(self.width-40, self.height-60, f"Contato: {formatted_phone}")
+        self.canvas.setFillColorRGB(0,0,0)
 
     def draw_page_number(self):
-        page_num_text = f"{self.page_number}"
-        self.canvas.drawRightString(self.width - 40, 15, page_num_text)
+        # Fundo decorativo para o rodapé
+        self.canvas.setFillColor(self.pallets[self.pallet_select][0])
+        self.canvas.rect(0, 0, self.width, 35, fill=1, stroke=0)
+        
+        # Linha decorativa superior
+        self.canvas.setStrokeColor(self.pallets[self.pallet_select][1])
+        self.canvas.setLineWidth(2)
+        self.canvas.line(0, 35, self.width, 35)
+        
+        # Número da página
+        self.canvas.setFont("Helvetica-Bold", 10)
+        # Sombra do número da página
+        self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+        self.canvas.drawCentredString(self.width - 39, 16, f"{self.page_number}")
+        # Texto principal
+        self.canvas.setFillColor(self.pallets[self.pallet_select][1])
+        self.canvas.drawCentredString(self.width - 40, 17, f"{self.page_number}")
+        
+        # Rodapé personalizado com estilo
         self.canvas.setFont("Courier-Oblique", size=8)
         name = "Feito com Brilliant Software © - Contatos: (28) 98113-7532 - Instagram: @brilliantsoftware"
         text_width = self.canvas.stringWidth(name, "Courier-Oblique", 8)
+        # Sombra do rodapé
+        self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+        self.canvas.drawString(self.width/2 - text_width/2 + 1, 14, name)
+        # Texto principal
+        self.canvas.setFillColor(self.pallets[self.pallet_select][1])
         self.canvas.drawString(self.width/2 - text_width/2, 15, name)
+        
+        self.canvas.setFillColorRGB(0,0,0)
         self.canvas.setFont("Courier-Oblique", size=10)
 
     def render_pdf(self):
@@ -262,9 +367,20 @@ class MakePdf:
         """Desenha a página de capa"""
         self.draw_header()
         
-        # Polígonos decorativos
+        # Fundo decorativo da capa
+        self.canvas.setFillColor(self.pallets[self.pallet_select][0])
+        self.canvas.rect(50, 200, self.width-100, self.height-400, fill=1, stroke=0)
+        
+        # Bordas ornamentadas da capa
+        self.canvas.setStrokeColor(self.pallets[self.pallet_select][1])
+        self.canvas.setLineWidth(3)
+        self.canvas.rect(50, 200, self.width-100, self.height-400, fill=0, stroke=1)
+        self.canvas.setLineWidth(1)
+        self.canvas.rect(55, 205, self.width-110, self.height-410, fill=0, stroke=1)
+        
+        # Polígonos decorativos maiores
         dark_rect = Polygon(
-            points=[0, self.height, 190, self.height, 0, self.height-190]
+            points=[0, self.height, 220, self.height, 0, self.height-220]
         )
         dark_rect.fillColor = self.pallets[self.pallet_select][1]
         dark_rect.strokeWidth = 0
@@ -274,7 +390,7 @@ class MakePdf:
         d.drawOn(self.canvas, 0, 0)
         
         dark_rect2 = Polygon(
-            points=[self.width, 190, self.width, 0, self.width-190, 0]
+            points=[self.width, 220, self.width, 0, self.width-220, 0]
         )
         dark_rect2.fillColor = self.pallets[self.pallet_select][1]
         dark_rect2.strokeWidth = 0
@@ -289,10 +405,16 @@ class MakePdf:
         # Logo principal
         self.draw_main_logo()
         
-        # Nome da empresa
-        self.canvas.setFont("Helvetica-Bold", 18)
+        # Nome da empresa estilizado
+        self.canvas.setFont("Helvetica-Bold", 24)
         name = self.database.get_name()
-        text_width = self.canvas.stringWidth(name, "Helvetica-Bold", 18)
+        text_width = self.canvas.stringWidth(name, "Helvetica-Bold", 24)
+        
+        # Sombra do nome principal
+        self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+        self.canvas.drawString(self.width/2 - text_width/2 + 2, self.height/2 - 202, name)
+        # Nome principal
+        self.canvas.setFillColor(self.pallets[self.pallet_select][1])
         self.canvas.drawString(self.width/2 - text_width/2, self.height/2 - 200, name)
         
         # Informações de contato na capa
@@ -369,39 +491,72 @@ class MakePdf:
             traceback.print_exc()
 
     def draw_contact_info(self):
-        """Desenha informações de contato na capa"""
+        """Desenha informações de contato na capa com estilo ornamentado"""
+        
+        # Fundo decorativo para informações de contato
+        y_center = self.height/2 - 250
+        contact_box_height = 120
+        box_y = y_center - 60
+      
+        # Título das informações de contato
         self.canvas.setFont("Helvetica", 12)
         y_pos = self.height/2 - 250
         
-        # Telefone
+        # Telefone com sombra
         phone = self.database.get_phone()
         if phone:
             cleaned = re.sub(r'\D', '', phone)
             if len(cleaned) >= 10:
                 formatted_phone = re.sub(r'^(\d{2})(\d{4,5})(\d{4})$', r'(\1) \2-\3', cleaned)
-                text_width = self.canvas.stringWidth(f"Telefone: {formatted_phone}", "Helvetica", 12)
-                self.canvas.drawString(self.width/2 - text_width/2, y_pos, f"Telefone: {formatted_phone}")
+                text = f"Telefone: {formatted_phone}"
+                text_width = self.canvas.stringWidth(text, "Helvetica", 12)
+                # Sombra do telefone
+                self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+                self.canvas.drawString(self.width/2 - text_width/2 + 1, y_pos - 1, text)
+                # Texto principal
+                self.canvas.setFillColor(self.pallets[self.pallet_select][1])
+                self.canvas.drawString(self.width/2 - text_width/2, y_pos, text)
                 y_pos -= 20
         
-        # Email
+        # Email com sombra
         email = self.database.user_settings.get('email', '')
         if email:
-            text_width = self.canvas.stringWidth(f"Email: {email}", "Helvetica", 12)
-            self.canvas.drawString(self.width/2 - text_width/2, y_pos, f"Email: {email}")
+            text = f"Email: {email}"
+            text_width = self.canvas.stringWidth(text, "Helvetica", 12)
+            # Sombra do email
+            self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+            self.canvas.drawString(self.width/2 - text_width/2 + 1, y_pos - 1, text)
+            # Texto principal
+            self.canvas.setFillColor(self.pallets[self.pallet_select][1])
+            self.canvas.drawString(self.width/2 - text_width/2, y_pos, text)
             y_pos -= 20
         
-        # Instagram
+        # Instagram com sombra
         instagram = self.database.user_settings.get('instagram_username', '')
         if instagram:
-            text_width = self.canvas.stringWidth(f"Instagram: @{instagram}", "Helvetica", 12)
-            self.canvas.drawString(self.width/2 - text_width/2, y_pos, f"Instagram: @{instagram}")
+            text = f"Instagram: @{instagram}"
+            text_width = self.canvas.stringWidth(text, "Helvetica", 12)
+            # Sombra do instagram
+            self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+            self.canvas.drawString(self.width/2 - text_width/2 + 1, y_pos - 1, text)
+            # Texto principal
+            self.canvas.setFillColor(self.pallets[self.pallet_select][1])
+            self.canvas.drawString(self.width/2 - text_width/2, y_pos, text)
             y_pos -= 20
         
-        # Website
+        # Website com sombra
         website = self.database.user_settings.get('website_url', '')
         if website:
-            text_width = self.canvas.stringWidth(f"Site: {website}", "Helvetica", 12)
-            self.canvas.drawString(self.width/2 - text_width/2, y_pos, f"Site: {website}")
+            text = f"Site: {website}"
+            text_width = self.canvas.stringWidth(text, "Helvetica", 12)
+            # Sombra do website
+            self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+            self.canvas.drawString(self.width/2 - text_width/2 + 1, y_pos - 1, text)
+            # Texto principal
+            self.canvas.setFillColor(self.pallets[self.pallet_select][1])
+            self.canvas.drawString(self.width/2 - text_width/2, y_pos, text)
+        
+        self.canvas.setFillColorRGB(0,0,0)
 
     def draw_items(self, lista: list):
         """Desenha os itens na página"""
@@ -441,12 +596,11 @@ class MakePdf:
     def draw_item_info(self, item, x, y):
         """Desenha as informações de um item"""
         self.canvas.setFont("Helvetica", 8)
-        
+        self.canvas.setFillColor(self.pallets[self.pallet_select][1])
         def quebra_linha(texto, limite=30):
             palavras = texto.split(' ')
             linha_atual = ''
             resultado = []
-
             for palavra in palavras:
                 if len(linha_atual) + len(palavra) + (1 if linha_atual else 0) > limite:
                     resultado.append(linha_atual)
@@ -456,18 +610,13 @@ class MakePdf:
                         linha_atual += ' ' + palavra
                     else:
                         linha_atual = palavra
-
             if linha_atual:
                 resultado.append(linha_atual)
-
             return resultado
-
         description = quebra_linha(f'Descrição: {item.get("item_name")}')
         textos = [f'Código: {item.get("cod")}']
-        
         if item.get("item_name"):
             textos.extend(description)
-        
         # Adicionar informações adicionais se existirem
         additional_infos = item.get("additional_infos", [])
         print(f"DEBUG: Item {item.get('cod')} tem {len(additional_infos)} infos adicionais: {additional_infos}")  # Debug
@@ -477,12 +626,17 @@ class MakePdf:
                 info_lines = quebra_linha(info, 25)
                 textos.extend(info_lines)
                 print(f"DEBUG: Adicionando ao PDF: {info}")  # Debug
-
         control = 2
         for text in textos:
             if text:
+                # Sombra do texto do item
+                self.canvas.setFillColorRGB(0.3, 0.3, 0.3)  # Sombra escura
+                self.canvas.drawString(x + 1, y - (10 * control) - 1, text)
+                # Texto principal do item
+                self.canvas.setFillColor(self.pallets[self.pallet_select][1])
                 self.canvas.drawString(x, y - (10 * control), text)
                 control += 1
+        self.canvas.setFillColorRGB(0,0,0)
 
     def draw_logo_small(self):
         """Desenha o logo pequeno no canto"""
