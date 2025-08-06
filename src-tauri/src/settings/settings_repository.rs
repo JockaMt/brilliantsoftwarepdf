@@ -144,23 +144,3 @@ fn validate_settings(mut settings: Settings) -> Settings {
     
     settings
 }
-
-pub fn save_settings(settings: &Settings) -> Result<(), String> {
-    let mut path: PathBuf = match data_dir() {
-        Some(dir) => dir,
-        None => return Err("Não foi possível obter o diretório de dados".to_string()),
-    };
-    path.push("BrilliantPDF");
-    path.push("settings.json");
-    
-    // Validar configurações antes de salvar
-    let validated_settings = validate_settings(settings.clone());
-    
-    match fs::File::create(&path) {
-        Ok(file) => {
-            serde_json::to_writer_pretty(file, &validated_settings)
-                .map_err(|e| format!("Erro ao salvar configurações: {}", e))
-        },
-        Err(e) => Err(format!("Erro ao criar arquivo de configurações: {}", e))
-    }
-}

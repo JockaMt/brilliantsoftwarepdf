@@ -104,7 +104,7 @@ const LicenseActivation: React.FC<LicenseActivationProps> = ({ onActivationSucce
     setIsError(false);
 
     try {
-      const result = await invoke<string>('activate_license', { 
+      await invoke<string>('activate_license', { 
         licenseKey: licenseKey.trim() 
       });
       

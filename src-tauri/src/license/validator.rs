@@ -1,10 +1,10 @@
 use std::collections::HashMap;
-use chrono::{DateTime, Utc, Duration};
+use chrono::{DateTime, Utc};
 use reqwest;
 use serde_json;
 use crate::license::types::{
-    LicenseInfo, LicenseError, LicenseStatus, ActivationRequest, 
-    ActivationResponse, LicenseData
+    LicenseInfo, LicenseError, LicenseStatus,
+    ActivationRequest, ActivationResponse
 };
 use crate::license::storage::LicenseStorage;
 

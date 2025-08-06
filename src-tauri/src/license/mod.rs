@@ -5,7 +5,6 @@ pub mod commands;
 pub mod guard;
 
 pub use validator::LicenseValidator;
-pub use storage::LicenseStorage;
 pub use types::*;
 pub use commands::*;
 pub use guard::*;

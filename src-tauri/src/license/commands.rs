@@ -1,5 +1,4 @@
-use tauri::State;
-use crate::license::{LicenseValidator, LicenseInfo, LicenseError, LicenseStatus};
+use crate::license::{LicenseValidator, LicenseError, LicenseStatus};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
