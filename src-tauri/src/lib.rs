@@ -3,9 +3,11 @@ mod updater;
 mod models;
 mod commands;
 mod settings;
+mod license;
 
 use commands::*;
 use commands::DbConn;
+use license::*;
 
 use db::connection;
 use rusqlite::Connection;
@@ -55,7 +57,15 @@ pub async fn run() {
             create_database_backup,
             select_save_folder,
             update_save_path,
-            generate_catalog_pdf_python
+            generate_catalog_pdf_python,
+            // Comandos de licenciamento
+            is_license_activated,
+            get_machine_code,
+            activate_license,
+            validate_current_license,
+            get_license_info,
+            renew_license,
+            deactivate_license
         ])
 		.run(tauri::generate_context!())
 		.unwrap();

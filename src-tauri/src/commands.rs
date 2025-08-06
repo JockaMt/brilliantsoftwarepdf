@@ -6,6 +6,7 @@ use rusqlite::Connection;
 use crate::models::{section::Section, item::Item, info::Info};
 use crate::db::{section_repository, item_repository, info_repository, settings_db};
 use crate::db::settings_db::UserSettings;
+use crate::license::check_license_middleware;
 
 pub struct DbConn(pub Mutex<Connection>);
 
@@ -526,6 +527,9 @@ pub fn update_save_path(new_path: String, _db: State<DbConn>) -> Result<(), Stri
 
 #[tauri::command]
 pub fn generate_catalog_pdf_python(db: State<DbConn>) -> Result<String, String> {
+    // Verificar licença antes de executar funcionalidade crítica
+    check_license_middleware()?;
+    
     use std::process::Command;
     use serde_json::json;
     use std::env;

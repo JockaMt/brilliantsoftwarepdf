@@ -71,7 +71,6 @@ export function AppSidebar() {
   const getUpdate = async () => {
     const e = await invoke("check_for_update"); //ToDo: remover esta linha
     if (typeof e === "string") {
-      if (e === "1.2.0") return;
       toast.custom((tr) => (
         <Card className="flex w-90 select-none">
           <CardHeader>
@@ -141,7 +140,6 @@ export function AppSidebar() {
       variant={"sidebar"}
       collapsible={"icon"}
     >
-      <Toaster className="flex w-full justify-center" position={"bottom-center"} />
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
