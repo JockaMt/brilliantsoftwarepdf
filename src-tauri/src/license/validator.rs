@@ -14,10 +14,13 @@ pub struct LicenseValidator {
 
 impl LicenseValidator {
     pub fn new() -> Self {
-        Self {
-            // URL da sua API de validação (sem barra no final)
-            api_base_url: "http://localhost:3000".to_string(),
-        }
+        // let api_base = option_env!("LICENSE_API_URL")
+        //     .map(|s| s.to_string())
+        //     .or_else(|| std::env::var("LICENSE_API_URL").ok())
+        //     .unwrap_or_else(|| "http://localhost:3030".to_string());
+        // Self { api_base_url: api_base }
+        let api_base = "http://localhost:3030".to_string();
+        Self { api_base_url: api_base }
     }
     
     /// Gera o código único da máquina baseado no hardware

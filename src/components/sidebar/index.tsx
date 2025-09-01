@@ -27,7 +27,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
-import { Toaster } from "@/components/ui/sonner.tsx";
 import { UserSettings } from "../../@types/interfaces/settings";
 import { useImageUpload } from "@/hooks/useImageUpload";
 

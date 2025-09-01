@@ -103,16 +103,6 @@ export default function (): ReactElement {
     loadSettings();
   }, []);
 
-  // Recarregar configurações quando a janela volta ao foco
-  useEffect(() => {
-    const handleFocus = () => {
-      loadSettings();
-    };
-    
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, []);
-
   if (!infos) return <div className="flex flex-1 justify-center items-center gap-2"><LoaderCircleIcon className="animate-spin" size={15}/><span>{t("general.loading")}</span></div>;
 
   return (

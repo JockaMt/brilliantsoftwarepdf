@@ -4,6 +4,10 @@ use std::path::Path;
 
 fn main() {
     // Em desenvolvimento, não recompilar automaticamente para evitar loops
+    let api_env = env::var("LICENSE_API_URL")
+        .unwrap_or_else(|_| "https://api.exemplo.com".to_string());
+    println!("cargo:rustc-env=LICENSE_API_URL={}", api_env);
+
     let profile = env::var("PROFILE").unwrap_or_default();
     let is_dev = profile == "debug";
     

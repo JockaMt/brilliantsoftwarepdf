@@ -42,6 +42,19 @@ function AppWrapper() {
     loadData().then();
   }, []);
 
+  // ✅ Listener para atualizar dados quando catálogo for importado
+  useEffect(() => {
+    const handleCatalogUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener('catalog-updated', handleCatalogUpdate);
+    
+    return () => {
+      window.removeEventListener('catalog-updated', handleCatalogUpdate);
+    };
+  }, []);
+
   if (loading) return (
     <div className="flex h-full w-full justify-center items-center gap-2">
       <LoaderCircleIcon className="animate-spin" size={15} />
@@ -97,10 +110,37 @@ export default function Home(): ReactElement {
     }
   };
 
+  const checkButtonStates = async () => {
+    const [itemsResult, sectionsResult] = await Promise.all([
+      invoke<boolean>("has_items"),
+      invoke<boolean>("has_sections")
+    ]);
+    setHasItem(itemsResult);
+    setHasSection(sectionsResult);
+  };
+
   useEffect(() => {
-    invoke<boolean>("has_items").then((res) => setHasItem(res));
-    invoke<boolean>("has_sections").then((res) => setHasSection(res));
-  }, [hasItem, hasSection]);
+    checkButtonStates();
+  }, []);
+
+  // ✅ Listener para atualizar estados dos botões quando catálogo for importado ou dados alterados
+  useEffect(() => {
+    const handleCatalogUpdate = () => {
+      checkButtonStates();
+    };
+
+    const handleDataUpdate = () => {
+      checkButtonStates();
+    };
+
+    window.addEventListener('catalog-updated', handleCatalogUpdate);
+    window.addEventListener('data-updated', handleDataUpdate);
+    
+    return () => {
+      window.removeEventListener('catalog-updated', handleCatalogUpdate);
+      window.removeEventListener('data-updated', handleDataUpdate);
+    };
+  }, []);
   
   return (
     <div className={"flex flex-col h-full"}>

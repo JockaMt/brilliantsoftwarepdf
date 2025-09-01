@@ -40,6 +40,11 @@ src-tauri/
 ## 🚀 Como Usar
 
 ### Build Automático (Recomendado)
+```powershell
+# Defina a variável de ambiente antes
+$env:LICENSE_API_URL="https://api.exemplo.com"; npm run tauri dev
+```
+
 ```bash
 # Build normal - compila Python automaticamente
 npm run tauri build

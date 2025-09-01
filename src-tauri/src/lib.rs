@@ -58,6 +58,11 @@ pub async fn run() {
             select_save_folder,
             update_save_path,
             generate_catalog_pdf_python,
+            export_catalog,
+            import_catalog,
+            open_file_dialog,
+            save_file_dialog,
+            save_temp_file,
             // Comandos de licenciamento
             is_license_activated,
             get_machine_code,

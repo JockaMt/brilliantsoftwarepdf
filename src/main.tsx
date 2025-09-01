@@ -13,7 +13,7 @@ import { LicenseGuard } from "@/components/license";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <LicenseGuard>
+    {/* <LicenseGuard> */}
       <BrowserRouter>
         <Layout>
           <Routes>
@@ -24,7 +24,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           </Routes>
         </Layout>
       </BrowserRouter>
-    </LicenseGuard>
+    {/* </LicenseGuard> */}
     <Toaster 
       position="top-right"
       toastOptions={{

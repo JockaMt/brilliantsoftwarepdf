@@ -8,13 +8,13 @@ import { Label } from "../ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { UserSettings } from "../../@types/interfaces/settings";
 
-// Função helper para recarregar a página atual
-const reloadCurrentPage = () => {
-  // Usar setTimeout para dar tempo ao toast aparecer antes do reload
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
-};
+// Função helper removida - agora usa callback para melhor performance
+// const reloadCurrentPage = () => {
+//   // Usar setTimeout para dar tempo ao toast aparecer antes do reload
+//   setTimeout(() => {
+//     window.location.reload();
+//   }, 1000);
+// };
 
 interface SocialMediaEditorProps {
   isOpen: boolean;
@@ -73,7 +73,8 @@ export const SocialMediaEditor = ({ isOpen, onClose, onSave }: SocialMediaEditor
       toast.success("Redes sociais atualizadas com sucesso!");
       onSave?.();
       onClose();
-      reloadCurrentPage();
+      // Removido reload automático para melhor performance - callback cuida da atualização
+      // reloadCurrentPage();
     } catch (error) {
       console.error("Erro ao salvar redes sociais:", error);
       toast.error("Erro ao salvar redes sociais");

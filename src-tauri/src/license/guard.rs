@@ -1,6 +1,5 @@
 use crate::license::{LicenseValidator, LicenseStatus};
 use std::sync::{Arc, Mutex};
-use tokio::time::{interval, Duration};
 
 pub struct LicenseGuard {
     validator: LicenseValidator,
@@ -15,38 +14,10 @@ impl LicenseGuard {
         }
     }
     
-    /// Inicia a validação inicial e o processo de verificação periódica
+    /// Inicia a validação inicial sem processo de verificação periódica
     pub async fn start_validation(&self) -> Result<(), String> {
-        // Verificação inicial
+        // Apenas verificação inicial - removida a validação periódica automática
         self.check_license().await?;
-        
-        // Iniciar verificação periódica em background
-        let validator = LicenseValidator::new();
-        let is_valid = Arc::clone(&self.is_valid);
-        
-        tokio::spawn(async move {
-            let mut interval = interval(Duration::from_secs(3600)); // Verificar a cada hora
-            
-            loop {
-                interval.tick().await;
-                
-                match validator.validate_license().await {
-                    Ok(status) => {
-                        let valid = matches!(status, LicenseStatus::Valid | LicenseStatus::NearExpiration(_));
-                        *is_valid.lock().unwrap() = valid;
-                        
-                        if !valid {
-                            eprintln!("Licença inválida detectada durante verificação periódica");
-                        }
-                    }
-                    Err(e) => {
-                        eprintln!("Erro na verificação periódica da licença: {}", e);
-                        *is_valid.lock().unwrap() = false;
-                    }
-                }
-            }
-        });
-        
         Ok(())
     }
     

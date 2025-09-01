@@ -123,6 +123,8 @@ export default function NewItem() {
             invoke("update_item", { id: id, code: values.code, description: values.description, sectionId: section.id, imagePath: imagePath }).then(async () => {
               toast.dismiss(loading_toast)
               toast.success(t("item.update_successfully"))
+              // Dispara evento para atualizar outros componentes
+              window.dispatchEvent(new CustomEvent('data-updated'));
               navigate(-1)
               await Promise.all(
                 values.infos?.map((info) => {
@@ -154,6 +156,8 @@ export default function NewItem() {
             invoke("create_item", { code: values.code, description: values.description, sectionId: section.id, imagePath: imagePath }).then(() => {
               toast.dismiss(loading_toast)
               toast.success(t("item.created_successfully"))
+              // Dispara evento para atualizar outros componentes
+              window.dispatchEvent(new CustomEvent('data-updated'));
               navigate(-1)
             }).catch(() => {
               toast.dismiss(loading_toast)

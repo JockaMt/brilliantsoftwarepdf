@@ -9,7 +9,7 @@ interface LicenseGuardProps {
 }
 
 const LicenseGuard: React.FC<LicenseGuardProps> = ({ children }) => {
-  const { canUseApp, loading, error, isActivated, licenseStatus } = useLicense();
+  const { canUseApp, loading, error, isActivated, licenseStatus, alreadyVerified, deactivateLicense } = useLicense();
   const [forceShowApp, setForceShowApp] = useState(false);
 
   const handleActivationSuccess = () => {
@@ -17,8 +17,21 @@ const LicenseGuard: React.FC<LicenseGuardProps> = ({ children }) => {
     setForceShowApp(true);
   };
 
-  // Mostrar loading inicial
-  if (loading) {
+  const handleDeactivate = async () => {
+    const ok = confirm('Deseja desativar a licença neste dispositivo?');
+    if (!ok) return;
+
+    try {
+      await deactivateLicense();
+      // após desativar, forçar mostrar ativação novamente
+      setForceShowApp(false);
+    } catch (e) {
+      console.error('Erro ao desativar licença', e);
+      alert('Erro ao desativar licença. Veja o console para detalhes.');
+    }
+  };
+
+  if (loading && !alreadyVerified) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <div className="text-center space-y-4">
@@ -54,9 +67,17 @@ const LicenseGuard: React.FC<LicenseGuardProps> = ({ children }) => {
 
   // Mostrar aviso se a licença está próxima do vencimento
   const showWarning = licenseStatus?.status === 'near_expiration' && licenseStatus.days_remaining;
-  
+
   return (
     <>
+      {/* Botão fixo para desativar licença (apenas quando ativado) */}
+      {isActivated && (
+        <div className="fixed top-4 right-4 z-50">
+          <Button variant="outline" size="sm" onClick={handleDeactivate}>
+            Desativar licença
+          </Button>
+        </div>
+      )}
       {showWarning && (
         <div className="bg-yellow-500 text-white py-3 px-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between">

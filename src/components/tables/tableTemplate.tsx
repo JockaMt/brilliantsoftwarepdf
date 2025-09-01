@@ -52,9 +52,11 @@ export default function TableSet<TData, TValue>({ ...props }: DataTableProps<TDa
       setSelectedItems([]);
       table.toggleAllRowsSelected(false);
 
+      // Dispara evento para atualizar outros componentes (como botões de opções)
+      window.dispatchEvent(new CustomEvent('data-updated'));
+
       // Feedback visual
       toast.success(t("general.delete_success"));
-      window.location.reload();
     } catch (error) {
       toast.error(t("general.delete_error"));
       console.error("Erro ao excluir itens:", error);

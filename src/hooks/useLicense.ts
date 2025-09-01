@@ -1,6 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 
+// Cache persistente para evitar verificações desnecessárias após refresh
+const CACHE_KEY = 'license_verification_cache';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+interface LicenseCache {
+  timestamp: number;
+  isActivated: boolean;
+  licenseStatus: LicenseStatus | null;
+  licenseInfo: LicenseInfo | null;
+  alreadyVerified: boolean;
+}
+
+// flag por processo: validação executada apenas uma vez por execução do app
+// ALTERAÇÃO: Validação de licença agora é feita APENAS na inicialização do software
+// Removida a verificação automática periódica (que acontecia a cada 30 minutos)
+// NOVA FUNCIONALIDADE: Cache persistente para evitar verificações após refresh da página
+let moduleAlreadyVerified = false;
+
 interface LicenseStatus {
   is_valid: boolean;
   status: string;
@@ -25,6 +43,41 @@ export const useLicense = () => {
   const [licenseInfo, setLicenseInfo] = useState<LicenseInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [alreadyVerified, setAlreadyVerified] = useState<boolean>(false);
+
+  // Funções para gerenciar cache persistente
+  const saveToCache = useCallback((data: Omit<LicenseCache, 'timestamp'>) => {
+    const cacheData: LicenseCache = {
+      ...data,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+  }, []);
+
+  const loadFromCache = useCallback((): LicenseCache | null => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (!cached) return null;
+      
+      const data: LicenseCache = JSON.parse(cached);
+      const now = Date.now();
+      
+      // Verificar se o cache ainda é válido
+      if (now - data.timestamp > CACHE_DURATION) {
+        localStorage.removeItem(CACHE_KEY);
+        return null;
+      }
+      
+      return data;
+    } catch {
+      localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+  }, []);
+
+  const clearCache = useCallback(() => {
+    localStorage.removeItem(CACHE_KEY);
+  }, []);
 
   // Função auxiliar para extrair mensagem de erro
   const extractErrorMessage = (error: any, defaultPrefix: string): string => {
@@ -49,17 +102,34 @@ export const useLicense = () => {
       const activated = await invoke<boolean>('is_license_activated');
       setIsActivated(activated);
       
+      let currentLicenseStatus = null;
+      let currentLicenseInfo = null;
+      
       if (activated) {
-        await validateLicense();
-        await getLicenseInfo();
+        const status = await invoke<LicenseStatus>('validate_current_license');
+        setLicenseStatus(status);
+        currentLicenseStatus = status;
+        
+        const info = await invoke<LicenseInfo>('get_license_info');
+        setLicenseInfo(info);
+        currentLicenseInfo = info;
       }
+      
+      // Salvar no cache após verificação bem-sucedida
+      saveToCache({
+        isActivated: activated,
+        licenseStatus: currentLicenseStatus,
+        licenseInfo: currentLicenseInfo,
+        alreadyVerified: true
+      });
+      
       setError('');
     } catch (err: any) {
       setError(extractErrorMessage(err, 'Erro ao verificar ativação'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [saveToCache]);
 
   const validateLicense = useCallback(async () => {
     try {
@@ -92,6 +162,7 @@ export const useLicense = () => {
       });
       
       await checkActivationStatus();
+      clearCache(); // Limpar cache após ativação para forçar nova verificação
       return result;
     } catch (err: any) {
       setError(extractErrorMessage(err, 'Erro na ativação'));
@@ -99,7 +170,7 @@ export const useLicense = () => {
     } finally {
       setLoading(false);
     }
-  }, [checkActivationStatus]);
+  }, [checkActivationStatus, clearCache]);
 
   const renewLicense = useCallback(async () => {
     try {
@@ -108,6 +179,7 @@ export const useLicense = () => {
       const result = await invoke<string>('renew_license');
       
       await checkActivationStatus();
+      clearCache(); // Limpar cache após renovação para forçar nova verificação
       return result;
     } catch (err: any) {
       setError(extractErrorMessage(err, 'Erro na renovação'));
@@ -115,17 +187,18 @@ export const useLicense = () => {
     } finally {
       setLoading(false);
     }
-  }, [checkActivationStatus]);
+  }, [checkActivationStatus, clearCache]);
 
   const deactivateLicense = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
       const result = await invoke<string>('deactivate_license');
-      
+      setAlreadyVerified(false);
       setIsActivated(false);
       setLicenseStatus(null);
       setLicenseInfo(null);
+      clearCache(); // Limpar cache após desativação
       return result;
     } catch (err: any) {
       setError(extractErrorMessage(err, 'Erro na desativação'));
@@ -133,7 +206,7 @@ export const useLicense = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [clearCache]);
 
   const getMachineCode = useCallback(async () => {
     try {
@@ -149,19 +222,51 @@ export const useLicense = () => {
   const canUseApp = isActivated && isValid;
 
   useEffect(() => {
-    checkActivationStatus();
-    
-    // Verificar licença a cada 30 minutos
-    const interval = setInterval(() => {
-      if (isActivated) {
-        validateLicense().catch(() => {
-          // Silenciar erros de verificação automática
-        });
-      }
-    }, 30 * 60 * 1000);
+    // Primeiro, tentar carregar dados do cache
+    const cachedData = loadFromCache();
+    if (cachedData && cachedData.alreadyVerified) {
+      // Usar dados do cache se disponíveis e válidos
+      setIsActivated(cachedData.isActivated);
+      setLicenseStatus(cachedData.licenseStatus);
+      setLicenseInfo(cachedData.licenseInfo);
+      setAlreadyVerified(true);
+      setLoading(false);
+      moduleAlreadyVerified = true;
+      return;
+    }
 
-    return () => clearInterval(interval);
-  }, [isActivated, checkActivationStatus, validateLicense]);
+    // Se não há cache válido, executa verificação apenas na primeira inicialização do processo
+    let cancelled = false;
+
+    (async () => {
+      if (!moduleAlreadyVerified) {
+        // Mostrar loading enquanto faz a verificação inicial
+        if (!cancelled) setLoading(true);
+        try {
+          await checkActivationStatus();
+        } catch (e) {
+          // Erro já tratado dentro de checkActivationStatus
+        } finally {
+          // Marcar que já foi verificado somente após a tentativa
+          moduleAlreadyVerified = true;
+          if (!cancelled) {
+            setAlreadyVerified(true);
+            setLoading(false);
+          }
+        }
+      } else {
+        // já verificado nesta execução
+        if (!cancelled) {
+          setAlreadyVerified(true);
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [checkActivationStatus, loadFromCache]);
 
   return {
     isActivated,
@@ -179,5 +284,6 @@ export const useLicense = () => {
     getMachineCode,
     checkActivationStatus,
     clearError: () => setError(''),
+    alreadyVerified,
   };
 };

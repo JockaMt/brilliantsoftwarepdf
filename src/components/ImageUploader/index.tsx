@@ -42,10 +42,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       onImageUploaded?.(newImageUrl);
       toast.success('Imagem carregada com sucesso!');
       
-      // Recarregar a página após salvar a imagem
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      // Removido o reload automático da página para melhor performance
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 1000);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar imagem';
       toast.error(errorMessage);
@@ -61,10 +61,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       onImageUploaded?.('');
       toast.success('Imagem removida com sucesso!');
       
-      // Recarregar a página após remover a imagem
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      // Removido o reload automático da página para melhor performance
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 1000);
     } catch (error) {
       toast.error('Erro ao remover imagem');
     }

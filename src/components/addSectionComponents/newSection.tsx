@@ -88,6 +88,8 @@ export default function NewItem() {
       if (values.section !== undefined) {
         invoke("update_section", { uuid: id, name: values.section }).then(() => {
           toast.success("Seção atualizada com sucesso!");
+          // Dispara evento para atualizar outros componentes
+          window.dispatchEvent(new CustomEvent('data-updated'));
         }).catch((err) => {
           if (err.toString().includes("UNIQUE")) {
             toast.warning(t("section.alrealy_exists"));
@@ -99,6 +101,8 @@ export default function NewItem() {
         .then(() => {
           // Nenhum valor esperado aqui
           toast.success("Seção criada com sucesso!");
+          // Dispara evento para atualizar outros componentes
+          window.dispatchEvent(new CustomEvent('data-updated'));
           navigate(-1);
         })
         .catch((err) => {

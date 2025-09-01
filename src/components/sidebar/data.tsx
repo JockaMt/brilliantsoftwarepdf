@@ -9,23 +9,29 @@ import {
   PhoneIcon,
   TrashIcon
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ReactElement, useState, useEffect } from "react";
 import SidebarPopup from "../SidebarPopup";
 import PopupInput from "../SidebarPopup/Input";
 import { Button } from "../ui/button";
 import { t } from "i18next";
-import { PaletteSelector, ColorPalette } from "../SidebarPopup/PaletteSelector";
 import { invoke } from "@tauri-apps/api/core";
+import { PaletteSelector, ColorPalette } from "../SidebarPopup/PaletteSelector";
 import { toast } from "sonner";
 import { UserSettings } from "../../@types/interfaces/settings";
 import { ImageUploader } from "../ImageUploader";
 
-// Função helper para recarregar a página atual
-const reloadCurrentPage = () => {
-  // Usar setTimeout para dar tempo ao toast aparecer antes do reload
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
+// Função helper removida - callbacks cuidam da atualização sem reload automático
+// const reloadCurrentPage = () => {
+//   // Usar setTimeout para dar tempo ao toast aparecer antes do reload
+//   setTimeout(() => {
+//     window.location.reload();
+//   }, 1000);
+// };
+
+// Função de substituição para evitar reloads desnecessários
+const updateUI = () => {
+  // Dispatch evento customizado para atualizar as tabelas
+  window.dispatchEvent(new CustomEvent('catalog-updated'));
 };
 
 
@@ -71,7 +77,7 @@ export const itemsProfile: Data[] = [
               await invoke("save_settings_command", { settings: updatedSettings });
               toast.success("Nome atualizado com sucesso!");
               close();
-              reloadCurrentPage();
+              updateUI(); // Substituído reload por callback otimizado
             } catch (error) {
               console.error("Erro ao salvar nome:", error);
               toast.error("Erro ao salvar nome");
@@ -134,7 +140,7 @@ export const itemsProfile: Data[] = [
             setCurrentImageUrl(imageUrl);
             toast.success("Imagem salva com sucesso!");
             close();
-            reloadCurrentPage();
+            updateUI(); // Substituído reload por callback otimizado
           };
           
           return (
@@ -186,7 +192,7 @@ export const itemsProfile: Data[] = [
               await invoke("save_palette", { paletteId: selectedPalette });
               toast.success(t("edit.palette_saved"));
               close();
-              reloadCurrentPage();
+              updateUI(); // Substituído reload por callback otimizado
             } catch (error) {
               console.error("Erro ao salvar paleta:", error);
               toast.error(t("edit.palette_save_error"));
@@ -252,7 +258,7 @@ export const itemsProfile: Data[] = [
               await invoke("save_settings_command", { settings: updatedSettings });
               toast.success("Número de telefone atualizado com sucesso!");
               close();
-              reloadCurrentPage();
+              updateUI(); // Substituído reload por callback otimizado
             } catch (error) {
               console.error("Erro ao salvar telefone:", error);
               toast.error("Erro ao salvar número de telefone");
@@ -287,16 +293,145 @@ export const itemsSettings: Data[] = [
     title: "catalog.import_catalog",
     url: "#",
     icon: FileOutputIcon,
-    action: () => {
-      console.log("Importar catálogo");
-    }
+    popup: (close) => (
+      <SidebarPopup
+        title="catalog.import_catalog"
+        description="catalog.import_catalog_description"
+      >
+        {(_info, _setInfo) => {
+          // Log para debug
+          console.log("Import component rendered");
+          
+          const handleFileImport = async (file: File) => {
+            console.log("handleFileImport called with:", file.name);
+            const loading_toast = toast.loading(t("catalog.importing"));
+            try {
+              const arrayBuffer = await file.arrayBuffer();
+              const uint8Array = new Uint8Array(arrayBuffer);
+              
+              const tempPath = await invoke<string>("save_temp_file", {
+                fileName: file.name,
+                data: Array.from(uint8Array)
+              });
+              
+              await invoke("import_catalog", { 
+                filePath: tempPath,
+                preserveCurrent: false 
+              });
+              
+              toast.dismiss(loading_toast);
+              toast.success(t("catalog.imported_successfully"));
+              updateUI();
+              close();
+            } catch (error) {
+              toast.dismiss(loading_toast);
+              toast.error(t("catalog.import_error") + ": " + error);
+            }
+          };
+
+          return (
+            <>
+              <div className="space-y-4">
+                {/* Input file oculto */}
+                <input
+                  type="file"
+                  accept=".catalog"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      console.log("File selected via input:", file.name);
+                      handleFileImport(file);
+                    }
+                  }}
+                  style={{ display: 'none' }}
+                  id="catalog-file-input"
+                />
+                
+                {/* Botão principal de importação */}
+                <Button 
+                  variant="default" 
+                  onClick={() => {
+                    const input = document.getElementById('catalog-file-input') as HTMLInputElement;
+                    input?.click();
+                  }}
+                  className="w-full h-16 text-lg"
+                >
+                  <FileOutputIcon className="mr-2 h-6 w-6" />
+                  {t("catalog.select_file")}
+                </Button>
+                
+                <p className="text-sm text-gray-600 text-center">
+                  {t("catalog.supported_format")}: .catalog
+                </p>
+              </div>
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button variant="outline" onClick={() => close()}>
+                  {t("general.cancel")}
+                </Button>
+              </div>
+            </>
+          );
+        }}
+      </SidebarPopup>
+    )
   }, {
     title: "catalog.export_catalog",
     url: "#",
     icon: FileInputIcon,
-    action: () => {
-      console.log("Exportar catálogo");
-    }
+    popup: (close) => (
+      <SidebarPopup
+        title="catalog.export_catalog"
+        description="catalog.export_catalog_description"
+      >
+        {(_info, _setInfo) => {
+          const handleExport = async () => {
+            try {
+              const savePath = await invoke<string | null>("save_file_dialog", { 
+                defaultName: "catalogo.catalog" 
+              });
+              
+              if (savePath) {
+                const loading_toast = toast.loading(t("catalog.exporting"));
+                try {
+                  await invoke("export_catalog", { filePath: savePath });
+                  toast.dismiss(loading_toast);
+                  toast.success(t("catalog.exported_successfully"));
+                  close();
+                } catch (error) {
+                  toast.dismiss(loading_toast);
+                  toast.error(t("catalog.export_error") + ": " + error);
+                }
+              }
+            } catch (error) {
+              toast.error(t("catalog.save_dialog_error"));
+            }
+          };
+
+          return (
+            <div className="space-y-4">
+              <Button 
+                variant="default" 
+                onClick={handleExport}
+                className="w-full h-16 text-lg"
+              >
+                <FileInputIcon className="mr-2 h-6 w-6" />
+                {t("general.export")}
+              </Button>
+              
+              <p className="text-sm text-gray-600 text-center">
+                Exportar o catálogo atual
+              </p>
+              
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button variant="outline" onClick={() => close()}>
+                  {t("general.cancel")}
+                </Button>
+              </div>
+            </div>
+          );
+        }}
+      </SidebarPopup>
+    )
   }, {
     title: "catalog.save_location",
     url: "#",

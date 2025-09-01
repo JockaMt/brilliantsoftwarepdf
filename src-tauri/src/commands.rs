@@ -4,7 +4,7 @@ use std::sync::Mutex;
 use rusqlite::Connection;
 
 use crate::models::{section::Section, item::Item, info::Info};
-use crate::db::{section_repository, item_repository, info_repository, settings_db};
+use crate::db::{section_repository, item_repository, info_repository, settings_db, catalog_repository};
 use crate::db::settings_db::UserSettings;
 use crate::license::check_license_middleware;
 
@@ -719,4 +719,58 @@ pub fn generate_catalog_pdf_python(db: State<DbConn>) -> Result<String, String> 
         let error = String::from_utf8_lossy(&output.stderr);
         Err(format!("Erro na geração do PDF: {}", error))
     }
+}
+
+#[tauri::command]
+pub fn export_catalog(file_path: String, db: State<DbConn>) -> Result<(), String> {
+    let conn = db.0.lock().unwrap();
+    catalog_repository::export_catalog(&conn, &file_path)
+}
+
+#[tauri::command]
+pub fn import_catalog(file_path: String, preserve_current: bool, db: State<DbConn>) -> Result<(), String> {
+    let conn = db.0.lock().unwrap();
+    catalog_repository::import_catalog(&conn, &file_path, preserve_current)
+}
+
+#[tauri::command]
+pub fn open_file_dialog() -> Result<Option<String>, String> {
+    use rfd::FileDialog;
+    
+    let file = FileDialog::new()
+        .add_filter("Catálogo", &["catalog"])
+        .pick_file();
+    
+    match file {
+        Some(path) => Ok(Some(path.to_string_lossy().to_string())),
+        None => Ok(None),
+    }
+}
+
+#[tauri::command]
+pub fn save_file_dialog(default_name: String) -> Result<Option<String>, String> {
+    use rfd::FileDialog;
+    
+    let file = FileDialog::new()
+        .add_filter("Catálogo", &["catalog"])
+        .set_file_name(&default_name)
+        .save_file();
+    
+    match file {
+        Some(path) => Ok(Some(path.to_string_lossy().to_string())),
+        None => Ok(None),
+    }
+}
+
+#[tauri::command]
+pub fn save_temp_file(file_name: String, data: Vec<u8>) -> Result<String, String> {
+    use std::env;
+    
+    let temp_dir = env::temp_dir();
+    let temp_path = temp_dir.join(&file_name);
+    
+    fs::write(&temp_path, data)
+        .map_err(|e| format!("Erro ao salvar arquivo temporário: {}", e))?;
+    
+    Ok(temp_path.to_string_lossy().to_string())
 }

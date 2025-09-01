@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use std::fs;
 use std::path::PathBuf;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Settings {
     pub name: String,
     pub save_path: String,

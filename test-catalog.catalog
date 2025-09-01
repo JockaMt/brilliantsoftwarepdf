@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "exported_at": "2025-08-31T12:00:00Z",
+  "settings": {
+    "name": "Teste",
+    "company": "Empresa Teste",
+    "logo_path": null,
+    "user_image": null
+  },
+  "sections": [
+    {
+      "id": "test-section-1",
+      "name": "Seção de Teste",
+      "items": [
+        {
+          "id": "test-item-1",
+          "code": "TESTE001",
+          "description": "Item de teste",
+          "image_path": null,
+          "section_id": "test-section-1",
+          "infos": []
+        }
+      ]
+    }
+  ]
+}
