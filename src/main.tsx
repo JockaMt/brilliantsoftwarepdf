@@ -9,11 +9,9 @@ import Profile from "@/routes/profile.tsx";
 import Layout from "@/components/sidebar/layout.tsx";
 import AddSectionPage from "@/routes/addSection.tsx";
 import AddItemPage from "./routes/addItem";
-import { LicenseGuard } from "@/components/license";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    {/* <LicenseGuard> */}
       <BrowserRouter>
         <Layout>
           <Routes>
@@ -24,7 +22,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           </Routes>
         </Layout>
       </BrowserRouter>
-    {/* </LicenseGuard> */}
     <Toaster 
       position="top-right"
       toastOptions={{

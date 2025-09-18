@@ -9,7 +9,7 @@ import {
   PhoneIcon,
   TrashIcon
 } from "lucide-react";
-import { ReactElement, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import SidebarPopup from "../SidebarPopup";
 import PopupInput from "../SidebarPopup/Input";
 import { Button } from "../ui/button";
