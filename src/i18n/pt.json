@@ -18,7 +18,9 @@
     "delete_success": "Excluído com sucesso",
     "delete_errorr": "Erro ao excluir",
     "save": "Salvar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "logout": "Sair",
+    "warning": "Atenção"
   },
 
   "item": {
@@ -93,9 +95,14 @@
     "edit_name": "Editar nome",
     "edit_image": "Editar imagem",
     "edit_palette": "Editar paleta",
+    "edit_palette_description": "Altere as cores do seu catálogo",
     "edit_phone": "Editar número",
+    "edit_phone_description": "Altere o número de telefone do seu catálogo",
     "edit_name_description": "Altere o nome do seu catálogo",
-    "edit_name_placeholder": "Nome do catálogo"
+    "edit_image_description": "Altere a imagem do seu catálogo",
+    "edit_name_placeholder": "Nome do catálogo",
+    "edit_profile": "Edição de Perfil",
+    "edit_profile_desc": "Configurações que você fez no menu lateral"
   },
 
   "settings": {
@@ -137,6 +144,7 @@
   },
 
   "feedback": {
-    "report_bug": "Reportar erro"
+    "report_bug": "Reportar erro",
+    "report_bug_description": "Informe um erro ou problema que você encontrou no software."
   }
 }

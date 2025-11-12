@@ -41,7 +41,10 @@ pub async fn run() {
             update_info,
             delete_info,
             save_image,
-            get_settings
+            get_settings,
+            save_user_id,
+            load_user_id,
+            clear_user_id
         ])
 		.run(tauri::generate_context!())
 		.unwrap();

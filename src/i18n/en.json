@@ -1,62 +1,108 @@
 {
-  "home": "Home",
-  "profile": "Profile",
-  "back": "Back",
-  "add_section": "Add section",
-  "options": "Options",
-  "sections": "Sections",
-  "new_section": "New section",
-  "new_section_sub": "Add new sections",
-  "add_item": "Add item",
-  "item_description": "Item name",
-  "image_button": "Choose image",
-  "manage_catalogs": "Manage catalogs",
-  "generate_catalog": "Generate catalog",
-  "actions": "Actions",
-  "filter": "Filter",
-  "search": "Search...",
-  "next": "Next",
-  "previous": "Previous",
-  "no_results": "No results",
-  "show": "Show",
-  "name": "Name",
-  "items": "Items",
-  "code": "Code",
-  "description": "Description",
-  "select_all": "Select all",
-  "deselect_all": "Deselect all",
-  "delete": "Delete",
-  "submit": "Add",
-  "section_name": "Section name",
-  "placeholder_section": "Rings, chairs, etc...",
-  "new_section_desc": "Add new sections to generate the catalog",
-  "info": "Information",
-  "info_desc": "Software information",
-  "social_media": "Social media",
-  "social_media_desc": "Your address on the web",
-  "path": "Save path",
-  "copy_right": "Copyright",
-  "version": "Version",
-  "dev": "Developer",
-  "settings": "Settings",
-  "settings_desc": "All about your catalog",
-  "update_avaliabe": "Update available",
-  "update_avaliabe_desc": "Update now to the new version",
-  "update": "Update",
-  "check_for_updates": "Check for updates",
-  "checking_for_updates": "Cheguing for updates...",
-  "language": "Language",
-  "edit_name": "Edit name",
-  "loading": "Loading",
-  "edit_image": "Edit image",
-  "edit_palette": "Edit palette",
-  "edit_phone": "Edit phone",
-  "import_catalog": "Import catalog",
-  "export_catalog": "Export catalog",
-  "save_location": "Save location",
-  "delete_catalog": "Delete catalog",
-  "report_bug": "Report bug",
-  "pt": "Portuguese",
-  "en": "English",
-  "es": "Spanish"
+  "general": {
+    "home": "Home",
+    "profile": "Profile",
+    "back": "Back",
+    "options": "Options",
+    "actions": "Actions",
+    "filter": "Filter",
+    "search": "Search...",
+    "next": "Next",
+    "previous": "Previous",
+    "no_results": "No results",
+    "show": "Show",
+    "delete": "Delete",
+    "submit": "Add",
+    "loading": "Loading",
+    "menu": "Menu",
+    "save": "Save",
+    "cancel": "Cancel",
+    "logout": "Logout",
+    "warning": "Warning"
+  },
+
+  "item": {
+    "new_item": "New item",
+    "new_item_sub": "Add new items",
+    "add_item": "Add item",
+    "item_description": "Item name",
+    "image_button": "Choose image",
+    "manage_catalogs": "Manage catalogs",
+    "generate_catalog": "Generate catalog",
+    "name": "Name",
+    "items": "Items",
+    "code": "Code",
+    "description": "Description"
+  },
+
+  "section": {
+    "sections": "Sections",
+    "new_section": "New section",
+    "new_section_sub": "Add new sections",
+    "new_section_desc": "Add new sections to generate the catalog",
+    "add_section": "Add section",
+    "section_name": "Section name",
+    "placeholder_section": "Rings, chairs, etc..."
+  },
+
+  "catalog": {
+    "manage_catalogs": "Manage catalogs",
+    "generate_catalog": "Generate catalog",
+    "import_catalog": "Import catalog",
+    "export_catalog": "Export catalog",
+    "delete_catalog": "Delete catalog",
+    "save_location": "Save location"
+  },
+
+  "edit": {
+    "edit_name": "Edit name",
+    "edit_image": "Edit image",
+    "edit_palette": "Edit palette",
+    "edit_phone": "Edit phone",
+    "edit_profile": "Profile Edition",
+    "edit_profile_desc": "Settings that you made in the sidebar menu"
+  },
+
+  "settings": {
+    "settings": "Settings",
+    "settings_desc": "All about your catalog",
+    "language": "Language",
+    "pt": "Portuguese",
+    "en": "English",
+    "es": "Spanish"
+  },
+
+  "update": {
+    "update_avaliabe": "Update available",
+    "update_avaliabe_desc": "Update now to the new version",
+    "update": "Update",
+    "check_for_updates": "Check for updates",
+    "checking_for_updates": "Checking for updates...",
+    "downloading": "Downloading updates",
+    "download_erro": "Failed to update, please try again later.",
+    "all_up_to_date": "Latest version installed."
+  },
+
+  "info": {
+    "info": "Information",
+    "info_desc": "Software information",
+    "social_media": "Social media",
+    "social_media_desc": "Your address on the web",
+    "path": "Save path",
+    "copy_right": "Copyright",
+    "version": "Version",
+    "dev": "Developer",
+    "default_name": "Username",
+    "help": "Help"
+  },
+
+  "multi_select": {
+    "select_all": "Select all",
+    "deselect_all": "Deselect all"
+  },
+
+  "feedback": {
+    "report_bug": "Report bug",
+    "report_bug_description": "Report an error or problem that you found in the software."
+  }
 }

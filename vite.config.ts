@@ -18,6 +18,32 @@ export default defineConfig(async () => ({
         "@": path.resolve(__dirname, './src')
       }
     },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor': [
+            'react',
+            'react-dom',
+            'react-router',
+            'react-i18next'
+          ],
+          'tauri': [
+            '@tauri-apps/api'
+          ],
+          'ui': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-label',
+            '@radix-ui/react-select',
+            '@radix-ui/react-separator',
+            'lucide-react',
+            'sonner'
+          ]
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000
+  },
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent Vite from obscuring rust errors

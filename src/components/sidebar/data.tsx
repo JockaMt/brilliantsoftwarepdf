@@ -58,7 +58,7 @@ export const itemsProfile: Data[] = [
         title="edit.edit_image"
         description="edit.edit_image_description"
       >
-        {(info, setInfo) => (
+        {() => (
           <>
             <Input type="file" id="file-input" accept="image/*" onChange={(e) => {
               if (e.target.files && e.target.files[0]) {
@@ -82,7 +82,7 @@ export const itemsProfile: Data[] = [
         title="edit.edit_palette"
         description="edit.edit_palette_description"
       >
-        {(info, setInfo) => (
+        {() => (
           <>
             <Button onClick={() => {
               console.log("Paleta salva!");
@@ -150,23 +150,34 @@ export const itemsSettings: Data[] = [
         title="catalog.delete_catalog"
         description="catalog.delete_catalog_description"
       >
-        {(info, setInfo) => (
-          <>
-          <Button
-          type="submit"
-            onClick={() => {
-              close();
-            }}
-          >{t("general.cancel")}</Button>
-            <Button
-              onClick={() => {
-                console.log("Catálogo deletado!");
-                close();
-              }}
-            >
-              {t("general.delete")}
-            </Button>
-          </>
+        {() => (
+          <div className="space-y-4">
+            <p className="text-sm text-destructive font-semibold">
+              ⚠️ {t("general.warning")}: Esta ação não pode ser desfeita!
+            </p>
+            <div className="flex gap-3 flex-col sm:flex-row">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  close();
+                }}
+                className="flex-1"
+              >
+                {t("general.cancel")}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  console.log("Catálogo deletado!");
+                  close();
+                }}
+                className="flex-1"
+              >
+                <TrashIcon className="w-4 h-4 mr-2" />
+                {t("general.delete")}
+              </Button>
+            </div>
+          </div>
         )}
       </SidebarPopup>
     )

@@ -22,12 +22,13 @@ import { Button } from "@/components/ui/button.tsx";
 import { useMediaQuery } from "usehooks-ts";
 import { useEffect, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
-import { SidebarOpenIcon, SparklesIcon, WrenchIcon } from "lucide-react";
+import { SidebarOpenIcon, SparklesIcon, WrenchIcon, LogOut } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip.tsx";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Toaster } from "@/components/ui/sonner.tsx";
+import { useAuth } from "@/hooks/useAuth";
 
 import i18n from "@/i18n";
 import { useTranslation } from "react-i18next";
@@ -44,6 +45,7 @@ export function AppSidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
   const isLargeScreen = useMediaQuery("(min-width: 768px)");
   const side = isLargeScreen ? "left" : "right";
   const [version, setVersion] = useState<string>("");
@@ -216,6 +218,20 @@ export function AppSidebar() {
                   </span>
                 </div>
               </div>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => {
+                  logout();
+                  navigate("/login");
+                }}
+                className="text-destructive hover:bg-destructive/10"
+              >
+                <LogOut className="h-5 w-5" />
+                <span className="flex duration-300 [[data-side=left][data-state=collapsed]_&]:w-0 [[data-side=left][data-state=collapsed]_&]:opacity-0">
+                  {t("general.logout")}
+                </span>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarGroupContent>
         </SidebarMenu>

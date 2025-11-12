@@ -142,3 +142,62 @@ pub fn save_image(image: Vec<u8>, code: String) -> Result<String, String> {
 pub fn get_settings(_db: State<DbConn>) -> Result<Settings, String> {
     Ok(settings_repository::get_settings())
 }
+
+// Auth commands
+#[tauri::command]
+pub fn save_user_id(user_id: String) -> Result<(), String> {
+    let config_dir = dirs::config_dir()
+        .ok_or("Erro ao obter diretório de configuração")?
+        .join("BrilliantSoftware");
+    
+    fs::create_dir_all(&config_dir)
+        .map_err(|e| format!("Erro ao criar diretório de configuração: {}", e))?;
+    
+    let user_id_file = config_dir.join(".user_id");
+    
+    fs::write(&user_id_file, &user_id)
+        .map_err(|e| format!("Erro ao salvar ID do usuário: {}", e))?;
+    
+    Ok(())
+}
+
+#[tauri::command]
+pub fn load_user_id() -> Result<Option<String>, String> {
+    let config_dir = dirs::config_dir()
+        .ok_or("Erro ao obter diretório de configuração")?
+        .join("BrilliantSoftware");
+    
+    let user_id_file = config_dir.join(".user_id");
+    
+    match fs::read_to_string(&user_id_file) {
+        Ok(user_id) => {
+            let trimmed = user_id.trim();
+            if trimmed.is_empty() {
+                Ok(None)
+            } else {
+                Ok(Some(trimmed.to_string()))
+            }
+        }
+        Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => {
+            Ok(None)
+        }
+        Err(e) => Err(format!("Erro ao carregar ID do usuário: {}", e))
+    }
+}
+
+#[tauri::command]
+pub fn clear_user_id() -> Result<(), String> {
+    let config_dir = dirs::config_dir()
+        .ok_or("Erro ao obter diretório de configuração")?
+        .join("BrilliantSoftware");
+    
+    let user_id_file = config_dir.join(".user_id");
+    
+    match fs::remove_file(&user_id_file) {
+        Ok(_) => Ok(()),
+        Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => {
+            Ok(()) // Arquivo não existe, consideramos como sucesso
+        }
+        Err(e) => Err(format!("Erro ao limpar ID do usuário: {}", e))
+    }
+}

@@ -1,60 +1,108 @@
 {
-  "home": "Inicio",
-  "profile": "Perfil",
-  "back": "Volver",
-  "add_section": "Agregar sección",
-  "options": "Opciones",
-  "sections": "Secciones",
-  "new_section": "Nueva sección",
-  "add_item": "Agregar ítem",
-  "item_description": "Nombre del item",
-  "manage_catalogs": "Administrar catálogos",
-  "generate_catalog": "Generar catálogo",
-  "actions": "Acciones",
-  "filter": "Filtro",
-  "search": "Buscar...",
-  "next": "Siguiente",
-  "previous": "Anterior",
-  "no_results": "Sin resultados",
-  "show": "Mostrar",
-  "name": "Nombre",
-  "items": "Ítems",
-  "code": "Código",
-  "description": "Descripción",
-  "select_all": "Seleccionar todo",
-  "deselect_all": "Deseleccionar todo",
-  "delete": "Eliminar",
-  "submit": "Adicionar",
-  "section_name": "Nombre de la sección",
-  "placeholder_section": "Anillos, sillas, etc...",
-  "new_section_desc": "Agrega nuevas secciones para generar el catálogo",
-  "info": "Información",
-  "info_desc": "Información del software",
-  "social_media": "Redes sociales",
-  "social_media_desc": "Tu dirección en la web",
-  "path": "Ruta de guardado",
-  "copy_right": "Derechos de autor",
-  "version": "Versión",
-  "dev": "Desarrollador",
-  "settings": "Configuración",
-  "settings_desc": "Todo sobre tu catálogo",
-  "update_avaliabe": "Actualización disponible",
-  "update_avaliabe_desc": "Actualiza ahora a la nueva versión",
-  "update": "Actualizar",
-  "check_for_updates": "Buscar actualizaciones",
-  "checking_for_updates": "Buscando actualizaciones...",
-  "language": "Idioma",
-  "edit_name": "Editar nombre",
-  "loading": "Carregando",
-  "edit_image": "Editar imagen",
-  "edit_palette": "Editar paleta",
-  "edit_phone": "Editar número",
-  "import_catalog": "Importar catálogo",
-  "export_catalog": "Exportar catálogo",
-  "save_location": "Dónde guardar",
-  "delete_catalog": "Eliminar catálogo",
-  "report_bug": "Reportar error",
-  "pt": "Portugués",
-  "en": "Inglés",
-  "es": "Español"
+  "general": {
+    "home": "Inicio",
+    "profile": "Perfil",
+    "back": "Volver",
+    "options": "Opciones",
+    "actions": "Acciones",
+    "filter": "Filtro",
+    "search": "Buscar...",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "no_results": "Sin resultados",
+    "show": "Mostrar",
+    "delete": "Eliminar",
+    "submit": "Adicionar",
+    "loading": "Cargando",
+    "menu": "Menú",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "logout": "Cerrar sesión",
+    "warning": "Advertencia"
+  },
+
+  "item": {
+    "new_item": "Nuevo item",
+    "new_item_sub": "Agregar nuevos ítems",
+    "add_item": "Agregar ítem",
+    "item_description": "Nombre del item",
+    "image_button": "Elegir imagen",
+    "manage_catalogs": "Administrar catálogos",
+    "generate_catalog": "Generar catálogo",
+    "name": "Nombre",
+    "items": "Ítems",
+    "code": "Código",
+    "description": "Descripción"
+  },
+
+  "section": {
+    "sections": "Secciones",
+    "new_section": "Nueva sección",
+    "new_section_sub": "Agregar nuevas secciones",
+    "new_section_desc": "Agrega nuevas secciones para generar el catálogo",
+    "add_section": "Agregar sección",
+    "section_name": "Nombre de la sección",
+    "placeholder_section": "Anillos, sillas, etc..."
+  },
+
+  "catalog": {
+    "manage_catalogs": "Administrar catálogos",
+    "generate_catalog": "Generar catálogo",
+    "import_catalog": "Importar catálogo",
+    "export_catalog": "Exportar catálogo",
+    "delete_catalog": "Eliminar catálogo",
+    "save_location": "Dónde guardar"
+  },
+
+  "edit": {
+    "edit_name": "Editar nombre",
+    "edit_image": "Editar imagen",
+    "edit_palette": "Editar paleta",
+    "edit_phone": "Editar número",
+    "edit_profile": "Edición de Perfil",
+    "edit_profile_desc": "Configuraciones que realizaste en el menú lateral"
+  },
+
+  "settings": {
+    "settings": "Configuración",
+    "settings_desc": "Todo sobre tu catálogo",
+    "language": "Idioma",
+    "pt": "Portugués",
+    "en": "Inglés",
+    "es": "Español"
+  },
+
+  "update": {
+    "update_avaliabe": "Actualización disponible",
+    "update_avaliabe_desc": "Actualiza ahora a la nueva versión",
+    "update": "Actualizar",
+    "check_for_updates": "Buscar actualizaciones",
+    "checking_for_updates": "Buscando actualizaciones...",
+    "downloading": "Descargando actualizaciones",
+    "download_erro": "Error al actualizar, intenta más tarde.",
+    "all_up_to_date": "Versión más reciente instalada."
+  },
+
+  "info": {
+    "info": "Información",
+    "info_desc": "Información del software",
+    "social_media": "Redes sociales",
+    "social_media_desc": "Tu dirección en la web",
+    "path": "Ruta de guardado",
+    "copy_right": "Derechos de autor",
+    "version": "Versión",
+    "dev": "Desarrollador",
+    "default_name": "Nombre de usuario",
+    "help": "Ayuda"
+  },
+
+  "multi_select": {
+    "select_all": "Seleccionar todo",
+    "deselect_all": "Deseleccionar todo"
+  },
+
+  "feedback": {
+    "report_bug": "Reportar error",
+    "report_bug_description": "Reporta un error o problema que encontraste en el software."
+  }
 }
