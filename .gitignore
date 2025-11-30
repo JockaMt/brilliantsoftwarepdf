@@ -23,8 +23,22 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment variables
+.env
+.env.local
+.env.*.local
 
-# Added by cargo
+# Yarn
+yarn.lock
+yarn-error.log
 
+# Tauri / Rust
+src-tauri/target/
+src-tauri/gen/
+src-tauri/true/
+src-tauri/Cargo.lock
+.cargo/
+
+# Build artifacts
 /target
 /~
